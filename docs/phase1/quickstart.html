@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Creator OS &mdash; Quick Start Guide</title>
+  <style>
+    :root {
+      --bg: #0f111a;
+      --surface: #1a1d2e;
+      --surface2: #222540;
+      --border: #2a2d3e;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --accent: #818cf8;
+      --accent2: #34d399;
+      --accent3: #f472b6;
+      --accent4: #fbbf24;
+      --red: #f87171;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+    .container { max-width: 900px; margin: 0 auto; padding: 3rem 2rem; }
+
+    .hero {
+      text-align: center;
+      padding: 4rem 2rem;
+      background: linear-gradient(135deg, #064e3b 0%, #0f111a 50%, #1e1b4b 100%);
+      border-bottom: 1px solid var(--border);
+    }
+    .hero h1 { font-size: 2.8rem; font-weight: 800; margin-bottom: 0.5rem; }
+    .hero h1 span { color: var(--accent2); }
+    .hero .subtitle { color: var(--muted); font-size: 1.15rem; }
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-radius: 9999px;
+      margin-bottom: 1rem;
+      background: rgba(52,211,153,0.15);
+      color: var(--accent2);
+      border: 1px solid rgba(52,211,153,0.3);
+    }
+    nav {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0.75rem 2rem;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin: 0 1rem;
+      transition: color 0.2s;
+    }
+    nav a:hover, nav a.active { color: var(--accent); }
+
+    section { margin-bottom: 3rem; }
+    h2 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--accent2);
+      display: inline-block;
+    }
+    h3 { font-size: 1.15rem; font-weight: 600; margin: 1.5rem 0 0.5rem; color: var(--accent); }
+    p { margin-bottom: 1rem; color: var(--muted); }
+    ul, ol { margin: 0.5rem 0 1.5rem 1.5rem; color: var(--muted); }
+    li { margin-bottom: 0.5rem; }
+    li strong { color: var(--text); }
+    code {
+      background: var(--surface2);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.85em;
+      color: var(--accent2);
+      font-family: 'Cascadia Code', 'Fira Code', monospace;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* Terminal blocks */
+    .terminal {
+      background: #0d1117;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin: 1rem 0 1.5rem;
+      overflow: hidden;
+    }
+    .terminal-header {
+      background: var(--surface);
+      padding: 0.5rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .terminal-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    .terminal-dot.r { background: #f87171; }
+    .terminal-dot.y { background: #fbbf24; }
+    .terminal-dot.g { background: #34d399; }
+    .terminal-title { color: var(--muted); font-size: 0.75rem; margin-left: 0.5rem; }
+    .terminal pre {
+      padding: 1.25rem;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      overflow-x: auto;
+      color: var(--muted);
+      font-family: 'Cascadia Code', 'Fira Code', monospace;
+      margin: 0;
+    }
+    .terminal pre .cmd { color: var(--accent2); }
+    .terminal pre .comment { color: #6b7280; }
+    .terminal pre .output { color: #94a3b8; }
+    .terminal pre .success { color: var(--accent2); }
+    .terminal pre .warn { color: var(--accent4); }
+    .terminal pre .err { color: var(--red); }
+
+    /* Step indicators */
+    .step {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      margin: 2rem 0;
+    }
+    .step-num {
+      flex-shrink: 0;
+      width: 36px;
+      height: 36px;
+      background: var(--accent);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+    .step-content { flex: 1; }
+    .step-content h3 { margin-top: 0.2rem; }
+
+    /* Callout boxes */
+    .callout {
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      margin: 1rem 0 1.5rem;
+      border-left: 4px solid;
+      font-size: 0.9rem;
+    }
+    .callout.info {
+      background: rgba(129,140,248,0.08);
+      border-color: var(--accent);
+      color: var(--muted);
+    }
+    .callout.warn {
+      background: rgba(251,191,36,0.08);
+      border-color: var(--accent4);
+      color: var(--muted);
+    }
+    .callout.danger {
+      background: rgba(248,113,113,0.08);
+      border-color: var(--red);
+      color: var(--muted);
+    }
+    .callout strong { color: var(--text); }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0 2rem;
+      font-size: 0.9rem;
+    }
+    th, td {
+      text-align: left;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    th { color: var(--accent); font-weight: 600; background: var(--surface); }
+    td { color: var(--muted); }
+
+    footer {
+      text-align: center;
+      padding: 2rem;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="hero">
+    <div class="badge">Quick Start Guide</div>
+    <h1>Creator <span>OS</span></h1>
+    <p class="subtitle">Get the platform running locally in minutes</p>
+  </header>
+
+  <nav>
+    <a href="scope.html">Scope</a>
+    <a href="design.html">Design</a>
+    <a href="quickstart.html" class="active">Quick Start</a>
+    <a href="how_to_use.html">How to Use</a>
+    <a href="local.html">Local Setup</a>
+    <a href="deploy.html">Deploy</a>
+  </nav>
+
+  <div class="container">
+
+    <!-- Prerequisites -->
+    <section>
+      <h2>Prerequisites</h2>
+      <p>Before starting, make sure you have the following installed on your machine:</p>
+
+      <table>
+        <thead><tr><th>Tool</th><th>Version</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Docker Desktop</strong></td><td>4.25+</td><td>Runs all 7 services in containers</td></tr>
+          <tr><td><strong>Docker Compose</strong></td><td>v2.20+</td><td>Included with Docker Desktop</td></tr>
+          <tr><td><strong>Git</strong></td><td>2.40+</td><td>Clone the repository</td></tr>
+          <tr><td><strong>Node.js</strong></td><td>20 LTS</td><td>Frontend development (optional for Docker-only setup)</td></tr>
+          <tr><td><strong>Python</strong></td><td>3.12+</td><td>Backend development (optional for Docker-only setup)</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout info">
+        <strong>Docker-only option:</strong> If you just want to run the platform, you only need Docker Desktop. Node.js and Python are only needed if you plan to develop outside Docker.
+      </div>
+    </section>
+
+    <!-- Step 1: Clone -->
+    <section>
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h3>Clone the Repository</h3>
+          <p>Clone the project to your local machine:</p>
+        </div>
+      </div>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot r"></span>
+          <span class="terminal-dot y"></span>
+          <span class="terminal-dot g"></span>
+          <span class="terminal-title">Terminal</span>
+        </div>
+        <pre><span class="cmd">git clone &lt;repository-url&gt; creator-os</span>
+<span class="cmd">cd creator-os</span></pre>
+      </div>
+    </section>
+
+    <!-- Step 2: Environment Variables -->
+    <section>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h3>Configure Environment Variables</h3>
+          <p>Copy the example environment file and fill in your API keys:</p>
+        </div>
+      </div>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot r"></span>
+          <span class="terminal-dot y"></span>
+          <span class="terminal-dot g"></span>
+          <span class="terminal-title">Terminal</span>
+        </div>
+        <pre><span class="cmd">cp .env.example .env</span></pre>
+      </div>
+
+      <p>Open <code>.env</code> in your editor and configure these required variables:</p>
+
+      <table>
+        <thead><tr><th>Variable</th><th>Required</th><th>How to Get It</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><code>ANTHROPIC_API_KEY</code></td>
+            <td>Yes</td>
+            <td>Sign up at <a href="https://console.anthropic.com">console.anthropic.com</a> and create an API key</td>
+          </tr>
+          <tr>
+            <td><code>OPENAI_API_KEY</code></td>
+            <td>Yes</td>
+            <td>Sign up at <a href="https://platform.openai.com">platform.openai.com</a> and create an API key</td>
+          </tr>
+          <tr>
+            <td><code>YOUTUBE_CLIENT_ID</code></td>
+            <td>Yes</td>
+            <td>Google Cloud Console &rarr; APIs &amp; Services &rarr; Credentials &rarr; Create OAuth 2.0 Client</td>
+          </tr>
+          <tr>
+            <td><code>YOUTUBE_CLIENT_SECRET</code></td>
+            <td>Yes</td>
+            <td>Same as above; copy the client secret</td>
+          </tr>
+          <tr>
+            <td><code>NEXTAUTH_SECRET</code></td>
+            <td>Yes</td>
+            <td>Generate with: <code>openssl rand -base64 32</code></td>
+          </tr>
+          <tr>
+            <td><code>SECRET_KEY</code></td>
+            <td>Yes</td>
+            <td>Generate with: <code>openssl rand -hex 32</code></td>
+          </tr>
+          <tr>
+            <td><code>REDDIT_CLIENT_ID</code></td>
+            <td>Optional</td>
+            <td>Reddit app preferences &rarr; Create application (script type)</td>
+          </tr>
+          <tr>
+            <td><code>NEWS_API_KEY</code></td>
+            <td>Optional</td>
+            <td>Sign up at newsapi.org</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="callout warn">
+        <strong>YouTube OAuth Setup:</strong> In Google Cloud Console, make sure to:
+        <ul style="margin:0.5rem 0 0 1.5rem;">
+          <li>Enable the <strong>YouTube Data API v3</strong> and <strong>YouTube Analytics API</strong></li>
+          <li>Add <code>http://localhost:8000/api/v1/auth/callback</code> as an authorized redirect URI</li>
+          <li>Add <code>http://localhost:3000</code> as an authorized JavaScript origin</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Step 3: Docker Compose Up -->
+    <section>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h3>Launch All Services</h3>
+          <p>Start the entire platform with Docker Compose:</p>
+        </div>
+      </div>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot r"></span>
+          <span class="terminal-dot y"></span>
+          <span class="terminal-dot g"></span>
+          <span class="terminal-title">Terminal</span>
+        </div>
+        <pre><span class="comment"># Build and start all services (first run takes a few minutes)</span>
+<span class="cmd">docker compose up --build</span>
+
+<span class="comment"># Or run in detached mode (background)</span>
+<span class="cmd">docker compose up --build -d</span></pre>
+      </div>
+
+      <p>Docker Compose will start 7 services. Wait for all health checks to pass:</p>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot r"></span>
+          <span class="terminal-dot y"></span>
+          <span class="terminal-dot g"></span>
+          <span class="terminal-title">Expected Output</span>
+        </div>
+        <pre><span class="success">✓ Container creator-os-postgres-1       Healthy</span>
+<span class="success">✓ Container creator-os-redis-1          Healthy</span>
+<span class="success">✓ Container creator-os-neo4j-1          Healthy</span>
+<span class="success">✓ Container creator-os-chroma-1         Healthy</span>
+<span class="success">✓ Container creator-os-backend-1        Started</span>
+<span class="success">✓ Container creator-os-celery-worker-1  Started</span>
+<span class="success">✓ Container creator-os-celery-beat-1    Started</span>
+<span class="success">✓ Container creator-os-frontend-1       Started</span></pre>
+      </div>
+    </section>
+
+    <!-- Step 4: Run Migrations -->
+    <section>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <h3>Run Database Migrations</h3>
+          <p>Apply the database schema to PostgreSQL:</p>
+        </div>
+      </div>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot r"></span>
+          <span class="terminal-dot y"></span>
+          <span class="terminal-dot g"></span>
+          <span class="terminal-title">Terminal</span>
+        </div>
+        <pre><span class="comment"># Run Alembic migrations inside the backend container</span>
+<span class="cmd">docker compose exec backend alembic upgrade head</span>
+
+<span class="output">INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 001, Initial schema</span></pre>
+      </div>
+    </section>
+
+    <!-- Step 5: Seed Data (Optional) -->
+    <section>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-content">
+          <h3>Seed Demo Data (Optional)</h3>
+          <p>Load sample data for development and testing:</p>
+        </div>
+      </div>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot r"></span>
+          <span class="terminal-dot y"></span>
+          <span class="terminal-dot g"></span>
+          <span class="terminal-title">Terminal</span>
+        </div>
+        <pre><span class="cmd">docker compose exec backend python infrastructure/scripts/seed_data.py</span>
+
+<span class="output">Created demo user: demo@creatorOS.dev
+Created 3 sample trends
+Created 1 sample idea
+Seeding complete!</span></pre>
+      </div>
+    </section>
+
+    <!-- Step 6: Verify -->
+    <section>
+      <div class="step">
+        <div class="step-num">6</div>
+        <div class="step-content">
+          <h3>Verify Everything Works</h3>
+          <p>Check that all services are responding:</p>
+        </div>
+      </div>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot r"></span>
+          <span class="terminal-dot y"></span>
+          <span class="terminal-dot g"></span>
+          <span class="terminal-title">Terminal</span>
+        </div>
+        <pre><span class="comment"># Check backend health</span>
+<span class="cmd">curl http://localhost:8000/health</span>
+<span class="success">{"status": "healthy", "version": "1.0.0"}</span>
+
+<span class="comment"># Check API docs (Swagger UI)</span>
+<span class="comment"># Open in browser: http://localhost:8000/docs</span>
+
+<span class="comment"># Check frontend</span>
+<span class="comment"># Open in browser: http://localhost:3000</span>
+
+<span class="comment"># Check Neo4j Browser (optional)</span>
+<span class="comment"># Open in browser: http://localhost:7474</span>
+<span class="comment"># Login: neo4j / creatorOSgraph</span>
+
+<span class="comment"># Check service status</span>
+<span class="cmd">docker compose ps</span></pre>
+      </div>
+
+      <h3>Service Endpoints</h3>
+      <table>
+        <thead><tr><th>Service</th><th>URL</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Frontend</strong></td><td><code>http://localhost:3000</code></td><td>Main dashboard UI</td></tr>
+          <tr><td><strong>Backend API</strong></td><td><code>http://localhost:8000</code></td><td>REST API</td></tr>
+          <tr><td><strong>API Docs</strong></td><td><code>http://localhost:8000/docs</code></td><td>Swagger UI (interactive)</td></tr>
+          <tr><td><strong>ReDoc</strong></td><td><code>http://localhost:8000/redoc</code></td><td>Alternative API docs</td></tr>
+          <tr><td><strong>Neo4j Browser</strong></td><td><code>http://localhost:7474</code></td><td>Knowledge graph explorer</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Local Development -->
+    <section>
+      <h2>Local Development (Without Docker)</h2>
+      <p>For faster development iteration, you can run the backend and frontend natively:</p>
+
+      <h3>Backend Setup</h3>
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot r"></span>
+          <span class="terminal-dot y"></span>
+          <span class="terminal-dot g"></span>
+          <span class="terminal-title">Terminal &mdash; Backend</span>
+        </div>
+        <pre><span class="comment"># Navigate to backend</span>
+<span class="cmd">cd backend</span>
+
+<span class="comment"># Create virtual environment</span>
+<span class="cmd">python -m venv .venv</span>
+
+<span class="comment"># Activate (Windows)</span>
+<span class="cmd">.venv\Scripts\activate</span>
+
+<span class="comment"># Activate (macOS/Linux)</span>
+<span class="cmd">source .venv/bin/activate</span>
+
+<span class="comment"># Install dependencies</span>
+<span class="cmd">pip install -e ".[dev]"</span>
+
+<span class="comment"># Start databases (keep these in Docker)</span>
+<span class="cmd">docker compose up postgres redis neo4j chroma -d</span>
+
+<span class="comment"># Run migrations</span>
+<span class="cmd">alembic upgrade head</span>
+
+<span class="comment"># Start the API server</span>
+<span class="cmd">uvicorn app.main:app --reload --host 0.0.0.0 --port 8000</span></pre>
+      </div>
+
+      <h3>Celery Workers (Separate Terminal)</h3>
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot r"></span>
+          <span class="terminal-dot y"></span>
+          <span class="terminal-dot g"></span>
+          <span class="terminal-title">Terminal &mdash; Celery</span>
+        </div>
+        <pre><span class="comment"># Start Celery worker</span>
+<span class="cmd">celery -A tasks.celery_app worker --loglevel=info</span>
+
+<span class="comment"># Start Celery Beat scheduler (another terminal)</span>
+<span class="cmd">celery -A tasks.celery_app beat --loglevel=info</span></pre>
+      </div>
+
+      <h3>Frontend Setup</h3>
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot r"></span>
+          <span class="terminal-dot y"></span>
+          <span class="terminal-dot g"></span>
+          <span class="terminal-title">Terminal &mdash; Frontend</span>
+        </div>
+        <pre><span class="comment"># Navigate to frontend</span>
+<span class="cmd">cd frontend</span>
+
+<span class="comment"># Install dependencies</span>
+<span class="cmd">npm install</span>
+
+<span class="comment"># Start dev server</span>
+<span class="cmd">npm run dev</span>
+
+<span class="output">  ▲ Next.js 14.x
+  - Local:    http://localhost:3000
+  - Ready in 2.5s</span></pre>
+      </div>
+    </section>
+
+    <!-- Running Tests -->
+    <section>
+      <h2>Running Tests</h2>
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot r"></span>
+          <span class="terminal-dot y"></span>
+          <span class="terminal-dot g"></span>
+          <span class="terminal-title">Terminal</span>
+        </div>
+        <pre><span class="comment"># Run backend tests (with Docker)</span>
+<span class="cmd">docker compose exec backend pytest -v</span>
+
+<span class="comment"># Run backend tests (local)</span>
+<span class="cmd">cd backend</span>
+<span class="cmd">pytest -v</span>
+
+<span class="comment"># Run with coverage</span>
+<span class="cmd">pytest --cov=app --cov-report=html -v</span>
+
+<span class="comment"># Run specific test file</span>
+<span class="cmd">pytest tests/test_api/test_health.py -v</span></pre>
+      </div>
+    </section>
+
+    <!-- Common Commands -->
+    <section>
+      <h2>Common Commands Reference</h2>
+      <table>
+        <thead><tr><th>Command</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><code>docker compose up --build</code></td><td>Build and start all services</td></tr>
+          <tr><td><code>docker compose down</code></td><td>Stop all services</td></tr>
+          <tr><td><code>docker compose down -v</code></td><td>Stop all services and delete volumes (reset data)</td></tr>
+          <tr><td><code>docker compose logs -f backend</code></td><td>Follow backend logs</td></tr>
+          <tr><td><code>docker compose logs -f celery-worker</code></td><td>Follow Celery worker logs</td></tr>
+          <tr><td><code>docker compose exec backend alembic upgrade head</code></td><td>Run database migrations</td></tr>
+          <tr><td><code>docker compose exec backend alembic revision --autogenerate -m "msg"</code></td><td>Create new migration</td></tr>
+          <tr><td><code>docker compose restart backend</code></td><td>Restart just the backend</td></tr>
+          <tr><td><code>docker compose ps</code></td><td>Check service status</td></tr>
+          <tr><td><code>docker compose exec postgres psql -U creator_os</code></td><td>Open PostgreSQL shell</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Troubleshooting -->
+    <section>
+      <h2>Troubleshooting</h2>
+
+      <h3>Port Already in Use</h3>
+      <div class="callout danger">
+        <strong>Error:</strong> <code>Bind for 0.0.0.0:8000 failed: port is already allocated</code>
+      </div>
+      <p>Another service is using the port. Stop it or change the port mapping in <code>docker-compose.yml</code>:</p>
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot r"></span>
+          <span class="terminal-dot y"></span>
+          <span class="terminal-dot g"></span>
+          <span class="terminal-title">Terminal</span>
+        </div>
+        <pre><span class="comment"># Find what's using port 8000</span>
+<span class="cmd">netstat -ano | findstr :8000</span>    <span class="comment"># Windows</span>
+<span class="cmd">lsof -i :8000</span>                   <span class="comment"># macOS/Linux</span></pre>
+      </div>
+
+      <h3>Database Connection Failed</h3>
+      <div class="callout danger">
+        <strong>Error:</strong> <code>Connection refused to localhost:5432</code>
+      </div>
+      <p>PostgreSQL may not be ready yet. Wait for the health check or check logs:</p>
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot r"></span>
+          <span class="terminal-dot y"></span>
+          <span class="terminal-dot g"></span>
+          <span class="terminal-title">Terminal</span>
+        </div>
+        <pre><span class="cmd">docker compose logs postgres</span>
+<span class="comment"># Wait for: "database system is ready to accept connections"</span></pre>
+      </div>
+
+      <h3>Neo4j Authentication Failed</h3>
+      <p>If Neo4j fails to connect, ensure the credentials match between <code>.env</code> and <code>docker-compose.yml</code>. Default: <code>neo4j / creatorOSgraph</code>.</p>
+
+      <h3>Celery Tasks Not Running</h3>
+      <p>Check that Redis is up and the Celery worker is connected:</p>
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot r"></span>
+          <span class="terminal-dot y"></span>
+          <span class="terminal-dot g"></span>
+          <span class="terminal-title">Terminal</span>
+        </div>
+        <pre><span class="cmd">docker compose logs celery-worker</span>
+<span class="comment"># Should show: "celery@... ready."</span>
+<span class="comment"># And list registered tasks</span></pre>
+      </div>
+
+      <h3>Frontend Can't Reach Backend</h3>
+      <p>Make sure <code>NEXT_PUBLIC_API_URL</code> in the frontend is set to <code>http://localhost:8000</code> (or the backend container name if both are in Docker).</p>
+
+      <h3>Full Reset</h3>
+      <p>If everything is broken, nuke it all and start fresh:</p>
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot r"></span>
+          <span class="terminal-dot y"></span>
+          <span class="terminal-dot g"></span>
+          <span class="terminal-title">Terminal &mdash; Nuclear Option</span>
+        </div>
+        <pre><span class="comment"># Stop everything, delete volumes, remove images</span>
+<span class="cmd">docker compose down -v --rmi local</span>
+
+<span class="comment"># Rebuild from scratch</span>
+<span class="cmd">docker compose up --build</span>
+
+<span class="comment"># Re-run migrations</span>
+<span class="cmd">docker compose exec backend alembic upgrade head</span></pre>
+      </div>
+    </section>
+
+    <!-- Environment Variables Reference -->
+    <section>
+      <h2>Full Environment Variables Reference</h2>
+      <table>
+        <thead><tr><th>Variable</th><th>Default</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>DATABASE_URL</code></td><td><code>postgresql+asyncpg://...</code></td><td>PostgreSQL async connection string</td></tr>
+          <tr><td><code>REDIS_URL</code></td><td><code>redis://redis:6379/0</code></td><td>Redis connection string</td></tr>
+          <tr><td><code>NEO4J_URI</code></td><td><code>bolt://neo4j:7687</code></td><td>Neo4j connection URI</td></tr>
+          <tr><td><code>NEO4J_USER</code></td><td><code>neo4j</code></td><td>Neo4j username</td></tr>
+          <tr><td><code>NEO4J_PASSWORD</code></td><td><code>creatorOSgraph</code></td><td>Neo4j password</td></tr>
+          <tr><td><code>CHROMA_HOST</code></td><td><code>chroma</code></td><td>ChromaDB hostname</td></tr>
+          <tr><td><code>CHROMA_PORT</code></td><td><code>8100</code></td><td>ChromaDB port</td></tr>
+          <tr><td><code>ANTHROPIC_API_KEY</code></td><td>&mdash;</td><td>Claude API key (required)</td></tr>
+          <tr><td><code>OPENAI_API_KEY</code></td><td>&mdash;</td><td>OpenAI API key (required)</td></tr>
+          <tr><td><code>YOUTUBE_CLIENT_ID</code></td><td>&mdash;</td><td>Google OAuth client ID</td></tr>
+          <tr><td><code>YOUTUBE_CLIENT_SECRET</code></td><td>&mdash;</td><td>Google OAuth client secret</td></tr>
+          <tr><td><code>YOUTUBE_REDIRECT_URI</code></td><td><code>http://localhost:8000/api/v1/auth/callback</code></td><td>OAuth redirect URI</td></tr>
+          <tr><td><code>SECRET_KEY</code></td><td>&mdash;</td><td>Backend signing key</td></tr>
+          <tr><td><code>NEXTAUTH_SECRET</code></td><td>&mdash;</td><td>NextAuth session secret</td></tr>
+          <tr><td><code>NEXTAUTH_URL</code></td><td><code>http://localhost:3000</code></td><td>NextAuth base URL</td></tr>
+          <tr><td><code>CELERY_BROKER_URL</code></td><td><code>redis://redis:6379/1</code></td><td>Celery message broker</td></tr>
+          <tr><td><code>CELERY_RESULT_BACKEND</code></td><td><code>redis://redis:6379/2</code></td><td>Celery result store</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+  </div>
+
+  <footer>
+    Creator OS &mdash; Phase 1 Documentation &copy; 2026
+  </footer>
+
+</body>
+</html>

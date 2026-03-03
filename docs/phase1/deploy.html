@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Creator OS &mdash; Cheap Production Deployment</title>
+  <style>
+    :root {
+      --bg: #0f111a;
+      --surface: #1a1d2e;
+      --surface2: #222540;
+      --border: #2a2d3e;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --accent: #818cf8;
+      --accent2: #34d399;
+      --accent3: #f472b6;
+      --accent4: #fbbf24;
+      --accent5: #38bdf8;
+      --red: #f87171;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+    .container { max-width: 960px; margin: 0 auto; padding: 3rem 2rem; }
+
+    .hero {
+      text-align: center;
+      padding: 4rem 2rem;
+      background: linear-gradient(135deg, #064e3b 0%, #0f111a 50%, #7c2d12 100%);
+      border-bottom: 1px solid var(--border);
+    }
+    .hero h1 { font-size: 2.6rem; font-weight: 800; margin-bottom: 0.5rem; }
+    .hero h1 span { color: var(--accent2); }
+    .hero .subtitle { color: var(--muted); font-size: 1.15rem; max-width: 640px; margin: 0 auto; }
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-radius: 9999px;
+      margin-bottom: 1rem;
+      background: rgba(52,211,153,0.15);
+      color: var(--accent2);
+      border: 1px solid rgba(52,211,153,0.3);
+    }
+    nav {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0.75rem 2rem;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin: 0 0.75rem;
+      transition: color 0.2s;
+    }
+    nav a:hover, nav a.active { color: var(--accent); }
+
+    section { margin-bottom: 3rem; }
+    h2 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--accent2);
+      display: inline-block;
+    }
+    h3 { font-size: 1.15rem; font-weight: 600; margin: 1.5rem 0 0.5rem; color: var(--accent); }
+    h4 { font-size: 1rem; font-weight: 600; margin: 1rem 0 0.4rem; color: var(--accent5); }
+    p { margin-bottom: 1rem; color: var(--muted); }
+    ul, ol { margin: 0.5rem 0 1.5rem 1.5rem; color: var(--muted); }
+    li { margin-bottom: 0.5rem; }
+    li strong { color: var(--text); }
+    code {
+      background: var(--surface2);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.85em;
+      color: var(--accent2);
+      font-family: 'Cascadia Code', 'Fira Code', monospace;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .terminal {
+      background: #0d1117;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin: 1rem 0 1.5rem;
+      overflow: hidden;
+    }
+    .terminal-header {
+      background: var(--surface);
+      padding: 0.5rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .terminal-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .terminal-dot.r { background: #f87171; }
+    .terminal-dot.y { background: #fbbf24; }
+    .terminal-dot.g { background: #34d399; }
+    .terminal-title { color: var(--muted); font-size: 0.75rem; margin-left: 0.5rem; }
+    .terminal pre {
+      padding: 1.25rem;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      overflow-x: auto;
+      color: var(--muted);
+      font-family: 'Cascadia Code', 'Fira Code', monospace;
+      margin: 0;
+    }
+    .terminal pre .cmd { color: var(--accent2); }
+    .terminal pre .comment { color: #6b7280; }
+    .terminal pre .hl { color: var(--accent); }
+    .terminal pre .success { color: var(--accent2); }
+    .terminal pre .warn { color: var(--accent4); }
+
+    .callout {
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      margin: 1rem 0 1.5rem;
+      border-left: 4px solid;
+      font-size: 0.9rem;
+    }
+    .callout.info { background: rgba(129,140,248,0.08); border-color: var(--accent); }
+    .callout.warn { background: rgba(251,191,36,0.08); border-color: var(--accent4); }
+    .callout.success { background: rgba(52,211,153,0.06); border-color: var(--accent2); }
+    .callout.money { background: rgba(52,211,153,0.06); border-color: var(--accent4); }
+    .callout strong { color: var(--text); }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0 2rem;
+      font-size: 0.9rem;
+    }
+    th, td {
+      text-align: left;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    th { color: var(--accent); font-weight: 600; background: var(--surface); }
+    td { color: var(--muted); }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.25rem;
+      margin: 1.5rem 0;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+    .card:hover { border-color: var(--accent); }
+    .card h4 { color: var(--text); margin-top: 0; }
+    .card p { font-size: 0.9rem; margin-bottom: 0; }
+    .card .price {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--accent2);
+      margin: 0.5rem 0;
+    }
+    .card .price-note {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    /* Cost highlight */
+    .cost-total {
+      background: linear-gradient(135deg, rgba(52,211,153,0.1), rgba(251,191,36,0.1));
+      border: 2px solid var(--accent2);
+      border-radius: 12px;
+      padding: 2rem;
+      text-align: center;
+      margin: 2rem 0;
+    }
+    .cost-total .amount {
+      font-size: 3rem;
+      font-weight: 800;
+      color: var(--accent2);
+    }
+    .cost-total .label {
+      font-size: 1.1rem;
+      color: var(--muted);
+      margin-top: 0.25rem;
+    }
+    .cost-total .note {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-top: 0.5rem;
+    }
+
+    /* Comparison badges */
+    .rec {
+      display: inline-block;
+      padding: 0.15rem 0.5rem;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      border-radius: 4px;
+      background: var(--accent2);
+      color: #0f111a;
+      margin-left: 0.5rem;
+      vertical-align: middle;
+    }
+
+    .step {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      margin: 2rem 0;
+    }
+    .step-num {
+      flex-shrink: 0;
+      width: 36px;
+      height: 36px;
+      background: var(--accent2);
+      color: #0f111a;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+    .step-content { flex: 1; }
+    .step-content h3 { margin-top: 0.2rem; }
+
+    footer {
+      text-align: center;
+      padding: 2rem;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="hero">
+    <div class="badge">Production Deployment</div>
+    <h1>Deploy for <span>~$15/month</span></h1>
+    <p class="subtitle">
+      A practical guide to deploying Creator OS for real users on a shoestring budget &mdash; perfect for your first few beta users.
+    </p>
+  </header>
+
+  <nav>
+    <a href="scope.html">Scope</a>
+    <a href="design.html">Design</a>
+    <a href="quickstart.html">Quick Start</a>
+    <a href="how_to_use.html">How to Use</a>
+    <a href="local.html">Local Setup</a>
+    <a href="deploy.html" class="active">Deploy</a>
+  </nav>
+
+  <div class="container">
+
+    <!-- Philosophy -->
+    <section>
+      <h2>Deployment Philosophy</h2>
+      <p>
+        You're in <strong>early stage</strong> &mdash; a handful of beta users, proving the product works.
+        The goal: get it online for real users as cheaply as possible without sacrificing reliability.
+        You can always scale later.
+      </p>
+      <p>Key principles for this stage:</p>
+      <ul>
+        <li><strong>Use free tiers aggressively</strong> &mdash; most cloud providers offer generous free tiers</li>
+        <li><strong>Managed databases</strong> &mdash; don't waste time on DB ops; use hosted services</li>
+        <li><strong>Single VPS</strong> &mdash; one cheap server runs everything until you need to scale</li>
+        <li><strong>Pay only for what you can't get free</strong> &mdash; compute and AI API calls</li>
+      </ul>
+    </section>
+
+    <!-- Recommended Stack -->
+    <section>
+      <h2>Recommended Stack &amp; Cost Breakdown</h2>
+
+      <div class="cost-total">
+        <div class="amount">~$12&ndash;$20/mo</div>
+        <div class="label">Total infrastructure cost for 1&ndash;10 users</div>
+        <div class="note">+ ~$5&ndash;$30/mo in AI API usage (depends on activity)</div>
+      </div>
+
+      <table>
+        <thead>
+          <tr><th>Service</th><th>Provider</th><th>Plan</th><th>Cost/mo</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>VPS (Backend + Celery + ChromaDB)</strong></td>
+            <td>Hetzner Cloud <span class="rec">Best Value</span></td>
+            <td>CX22 (2 vCPU, 4 GB RAM, 40 GB SSD)</td>
+            <td><strong>~$4.50</strong></td>
+          </tr>
+          <tr>
+            <td><strong>PostgreSQL</strong></td>
+            <td>Neon <span class="rec">Free Tier</span></td>
+            <td>Free (0.5 GB storage, autoscaling compute)</td>
+            <td><strong>$0</strong></td>
+          </tr>
+          <tr>
+            <td><strong>Redis</strong></td>
+            <td>Upstash <span class="rec">Free Tier</span></td>
+            <td>Free (10K cmds/day, 256 MB)</td>
+            <td><strong>$0</strong></td>
+          </tr>
+          <tr>
+            <td><strong>Neo4j</strong></td>
+            <td>Neo4j Aura Free <span class="rec">Free Tier</span></td>
+            <td>Free (1 instance, 200K nodes, 400K relationships)</td>
+            <td><strong>$0</strong></td>
+          </tr>
+          <tr>
+            <td><strong>Frontend Hosting</strong></td>
+            <td>Vercel <span class="rec">Free Tier</span></td>
+            <td>Free (hobby plan, auto-deploy from Git)</td>
+            <td><strong>$0</strong></td>
+          </tr>
+          <tr>
+            <td><strong>Domain</strong></td>
+            <td>Cloudflare / Namecheap</td>
+            <td>.com domain</td>
+            <td><strong>~$1</strong></td>
+          </tr>
+          <tr>
+            <td><strong>SSL</strong></td>
+            <td>Let's Encrypt / Cloudflare</td>
+            <td>Free automatic HTTPS</td>
+            <td><strong>$0</strong></td>
+          </tr>
+          <tr>
+            <td colspan="3" style="text-align:right; font-weight:700; color:var(--text);">Infrastructure Subtotal</td>
+            <td style="font-weight:700; color:var(--accent2);">~$5.50</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>AI API Costs (Usage-Based)</h3>
+      <table>
+        <thead>
+          <tr><th>API</th><th>Use Case</th><th>Est. Cost/User/Mo</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Anthropic (Claude)</strong></td>
+            <td>Script writing, idea generation, DNA analysis, SEO</td>
+            <td>$3&ndash;$10</td>
+          </tr>
+          <tr>
+            <td><strong>OpenAI</strong></td>
+            <td>Embeddings (text-embedding-3-small), fallback LLM</td>
+            <td>$0.50&ndash;$2</td>
+          </tr>
+          <tr>
+            <td><strong>YouTube Data API</strong></td>
+            <td>Channel data, analytics (10K units/day free)</td>
+            <td>$0</td>
+          </tr>
+          <tr>
+            <td colspan="2" style="text-align:right; font-weight:700; color:var(--text);">AI cost per active user</td>
+            <td style="font-weight:700; color:var(--accent4);">~$3&ndash;$12</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="callout money">
+        <strong>Cost-saving tips for AI:</strong>
+        <ul style="margin: 0.5rem 0 0 1.5rem;">
+          <li>Use <code>claude-haiku-4-5-20251001</code> for scoring/classification tasks (10x cheaper than Sonnet)</li>
+          <li>Use <code>claude-sonnet-4-20250514</code> only for creative writing (scripts, ideas)</li>
+          <li>Cache LLM responses aggressively &mdash; the <code>@cached</code> decorator is already in place</li>
+          <li>Batch embedding calls &mdash; the <code>generate_embeddings_batch()</code> function is already built</li>
+          <li>Set sensible <code>max_tokens</code> limits per agent node</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Alternative Providers -->
+    <section>
+      <h2>Alternative Provider Options</h2>
+      <p>Depending on your region and preferences, here are alternatives at similar price points:</p>
+
+      <h3>VPS Alternatives</h3>
+      <table>
+        <thead><tr><th>Provider</th><th>Plan</th><th>Specs</th><th>Cost/mo</th></tr></thead>
+        <tbody>
+          <tr><td>Hetzner Cloud</td><td>CX22</td><td>2 vCPU, 4 GB, 40 GB</td><td><strong>$4.50</strong> <span class="rec">Best</span></td></tr>
+          <tr><td>DigitalOcean</td><td>Basic Droplet</td><td>2 vCPU, 2 GB, 50 GB</td><td>$12</td></tr>
+          <tr><td>Linode (Akamai)</td><td>Shared 2GB</td><td>1 vCPU, 2 GB, 50 GB</td><td>$12</td></tr>
+          <tr><td>Oracle Cloud</td><td>Always Free</td><td>ARM 4 OCPU, 24 GB (!!)</td><td><strong>$0</strong> (if available)</td></tr>
+          <tr><td>Railway</td><td>Hobby</td><td>Shared, usage-based</td><td>$5 + usage</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout info">
+        <strong>Oracle Cloud Always Free</strong> offers an absurdly powerful ARM instance (4 cores, 24 GB RAM) for free forever.
+        Availability varies by region. If you can get it, it's the ultimate budget option.
+      </div>
+
+      <h3>PostgreSQL Alternatives</h3>
+      <table>
+        <thead><tr><th>Provider</th><th>Free Tier</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>Neon <span class="rec">Pick</span></td><td>0.5 GB, autoscale compute</td><td>Serverless, pgvector built-in, branching</td></tr>
+          <tr><td>Supabase</td><td>500 MB, 2 projects</td><td>Full Postgres + pgvector + auth + realtime</td></tr>
+          <tr><td>Railway</td><td>$5 credit/mo</td><td>Standard Postgres, easy setup</td></tr>
+          <tr><td>Self-hosted on VPS</td><td>Included in VPS cost</td><td>More RAM-efficient, you manage backups</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Redis Alternatives</h3>
+      <table>
+        <thead><tr><th>Provider</th><th>Free Tier</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>Upstash <span class="rec">Pick</span></td><td>10K cmds/day, 256 MB</td><td>Serverless, REST API, great for low traffic</td></tr>
+          <tr><td>Redis Cloud</td><td>30 MB</td><td>Small but works for caching</td></tr>
+          <tr><td>Self-hosted on VPS</td><td>Included in VPS cost</td><td>Best performance, uses ~50 MB RAM</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Architecture Diagram -->
+    <section>
+      <h2>Production Architecture</h2>
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot r"></span>
+          <span class="terminal-dot y"></span>
+          <span class="terminal-dot g"></span>
+          <span class="terminal-title">Architecture Overview</span>
+        </div>
+        <pre>
+    Users (Browser)
+         │
+         ▼
+  ┌──────────────┐          ┌──────────────────────────────┐
+  │   Cloudflare  │          │        <span class="hl">Vercel (Free)</span>         │
+  │   DNS + SSL   │─────────▶│   Next.js 14 Frontend       │
+  │   (Free)      │          │   Auto-deploy from GitHub    │
+  └──────┬───────┘          └──────────────────────────────┘
+         │
+         │ api.yourdomain.com
+         ▼
+  ┌──────────────────────────────────────────┐
+  │          <span class="hl">Hetzner VPS ($4.50/mo)</span>          │
+  │                                          │
+  │  ┌─────────────┐  ┌──────────────────┐   │
+  │  │  <span class="success">FastAPI</span>    │  │  <span class="success">Celery Worker</span>   │   │
+  │  │  (Gunicorn) │  │  + Beat Scheduler │   │
+  │  │  Port 8000  │  │                   │   │
+  │  └─────────────┘  └──────────────────┘   │
+  │                                          │
+  │  ┌─────────────┐  ┌──────────────────┐   │
+  │  │  <span class="warn">ChromaDB</span>   │  │  <span class="warn">Caddy</span>           │   │
+  │  │  Port 8100  │  │  (Reverse Proxy)  │   │
+  │  │  (Internal) │  │  Auto HTTPS       │   │
+  │  └─────────────┘  └──────────────────┘   │
+  └──────────────────────────────────────────┘
+         │             │              │
+         ▼             ▼              ▼
+  ┌────────────┐ ┌──────────┐ ┌────────────┐
+  │ <span class="hl">Neon</span>       │ │ <span class="hl">Upstash</span>  │ │ <span class="hl">Neo4j Aura</span>│
+  │ PostgreSQL │ │ Redis    │ │ Free       │
+  │ Free       │ │ Free     │ │            │
+  └────────────┘ └──────────┘ └────────────┘
+</pre>
+      </div>
+    </section>
+
+    <!-- Step-by-step deployment -->
+    <section>
+      <h2>Step-by-Step Deployment</h2>
+
+      <!-- Step 1: Managed Services -->
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h3>Set Up Managed Databases (Free Tiers)</h3>
+        </div>
+      </div>
+
+      <h4>A) Neon PostgreSQL</h4>
+      <ol>
+        <li>Sign up at <a href="https://neon.tech">neon.tech</a> (GitHub login works)</li>
+        <li>Create a new project named <code>creator-os</code></li>
+        <li>Copy the connection string &mdash; it looks like:
+          <code>postgresql://user:pass@ep-xxx.region.aws.neon.tech/creator_os?sslmode=require</code></li>
+        <li>Enable the <strong>pgvector</strong> extension: go to SQL Editor and run <code>CREATE EXTENSION vector;</code></li>
+        <li>Note: For asyncpg, change the scheme to <code>postgresql+asyncpg://</code></li>
+      </ol>
+
+      <h4>B) Upstash Redis</h4>
+      <ol>
+        <li>Sign up at <a href="https://upstash.com">upstash.com</a></li>
+        <li>Create a new Redis database in the region closest to your VPS</li>
+        <li>Copy the Redis URL &mdash; it looks like: <code>rediss://default:xxx@region.upstash.io:6379</code></li>
+        <li>Create a second database for Celery broker (or use database index 1 of the same instance)</li>
+      </ol>
+
+      <h4>C) Neo4j Aura Free</h4>
+      <ol>
+        <li>Sign up at <a href="https://neo4j.com/cloud/aura-free/">neo4j.com/cloud/aura-free</a></li>
+        <li>Create a free instance &mdash; save the <strong>password</strong> (shown only once!)</li>
+        <li>Note the connection URI: <code>neo4j+s://xxx.databases.neo4j.io</code></li>
+        <li>Load the initial schema: open the Neo4j Browser and paste contents of <code>infrastructure/docker/neo4j/init.cypher</code></li>
+      </ol>
+
+      <!-- Step 2: VPS -->
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h3>Provision the VPS (Hetzner)</h3>
+        </div>
+      </div>
+
+      <ol>
+        <li>Sign up at <a href="https://www.hetzner.com/cloud">hetzner.com/cloud</a></li>
+        <li>Create a new server:
+          <ul>
+            <li><strong>Location:</strong> Closest to your users (e.g., Ashburn for US)</li>
+            <li><strong>Image:</strong> Ubuntu 24.04</li>
+            <li><strong>Type:</strong> CX22 (2 vCPU, 4 GB RAM) &mdash; $4.50/mo</li>
+            <li><strong>SSH Key:</strong> Add your public key</li>
+          </ul>
+        </li>
+        <li>Note the server IP address</li>
+      </ol>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot r"></span>
+          <span class="terminal-dot y"></span>
+          <span class="terminal-dot g"></span>
+          <span class="terminal-title">SSH into your server</span>
+        </div>
+        <pre><span class="cmd">ssh root@YOUR_SERVER_IP</span></pre>
+      </div>
+
+      <!-- Step 3: Server Setup -->
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h3>Set Up the Server</h3>
+        </div>
+      </div>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot r"></span>
+          <span class="terminal-dot y"></span>
+          <span class="terminal-dot g"></span>
+          <span class="terminal-title">Server Setup (run on VPS)</span>
+        </div>
+        <pre><span class="comment"># Update system</span>
+<span class="cmd">apt update && apt upgrade -y</span>
+
+<span class="comment"># Install Python 3.12, pip, venv</span>
+<span class="cmd">apt install -y python3.12 python3.12-venv python3-pip</span>
+
+<span class="comment"># Install Git</span>
+<span class="cmd">apt install -y git</span>
+
+<span class="comment"># Install Caddy (reverse proxy with auto HTTPS)</span>
+<span class="cmd">apt install -y debian-keyring debian-archive-keyring apt-transport-https curl</span>
+<span class="cmd">curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg</span>
+<span class="cmd">curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | tee /etc/apt/sources.list.d/caddy-stable.list</span>
+<span class="cmd">apt update && apt install -y caddy</span>
+
+<span class="comment"># Create app user (don't run app as root)</span>
+<span class="cmd">useradd -m -s /bin/bash creator</span>
+<span class="cmd">su - creator</span></pre>
+      </div>
+
+      <!-- Step 4: Deploy Code -->
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <h3>Deploy the Backend Code</h3>
+        </div>
+      </div>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot r"></span>
+          <span class="terminal-dot y"></span>
+          <span class="terminal-dot g"></span>
+          <span class="terminal-title">As 'creator' user on VPS</span>
+        </div>
+        <pre><span class="comment"># Clone your repo</span>
+<span class="cmd">git clone &lt;your-repo-url&gt; ~/creator-os</span>
+<span class="cmd">cd ~/creator-os/backend</span>
+
+<span class="comment"># Create virtual environment</span>
+<span class="cmd">python3.12 -m venv .venv</span>
+<span class="cmd">source .venv/bin/activate</span>
+
+<span class="comment"># Install dependencies</span>
+<span class="cmd">pip install -e ".[dev]"</span>
+
+<span class="comment"># Install gunicorn (production ASGI server)</span>
+<span class="cmd">pip install gunicorn uvicorn[standard]</span></pre>
+      </div>
+
+      <!-- Step 5: Environment -->
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-content">
+          <h3>Configure Production Environment</h3>
+        </div>
+      </div>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot r"></span>
+          <span class="terminal-dot y"></span>
+          <span class="terminal-dot g"></span>
+          <span class="terminal-title">.env (production values)</span>
+        </div>
+        <pre><span class="comment"># Create .env in project root</span>
+<span class="cmd">nano ~/creator-os/.env</span>
+
+<span class="hl"># App</span>
+APP_ENV=production
+SECRET_KEY=<span class="warn">&lt;generate: python3 -c "import secrets; print(secrets.token_hex(32))"&gt;</span>
+BACKEND_URL=https://api.yourdomain.com
+FRONTEND_URL=https://yourdomain.com
+
+<span class="hl"># Database — Neon (copy from Neon dashboard)</span>
+DATABASE_URL=postgresql+asyncpg://user:pass@ep-xxx.region.aws.neon.tech/creator_os?ssl=require
+
+<span class="hl"># Redis — Upstash (copy from Upstash dashboard)</span>
+REDIS_URL=rediss://default:xxx@region.upstash.io:6379
+CELERY_BROKER_URL=rediss://default:xxx@region.upstash.io:6379/1
+CELERY_RESULT_BACKEND=rediss://default:xxx@region.upstash.io:6379/2
+
+<span class="hl"># Neo4j — Aura (copy from Aura dashboard)</span>
+NEO4J_URI=neo4j+s://xxx.databases.neo4j.io
+NEO4J_USER=neo4j
+NEO4J_PASSWORD=<span class="warn">&lt;from Aura setup&gt;</span>
+
+<span class="hl"># ChromaDB — runs locally on the VPS</span>
+CHROMA_HOST=localhost
+CHROMA_PORT=8100
+
+<span class="hl"># LLM Keys</span>
+ANTHROPIC_API_KEY=<span class="warn">&lt;your key&gt;</span>
+OPENAI_API_KEY=<span class="warn">&lt;your key&gt;</span>
+
+<span class="hl"># YouTube OAuth</span>
+YOUTUBE_CLIENT_ID=<span class="warn">&lt;your client id&gt;</span>
+YOUTUBE_CLIENT_SECRET=<span class="warn">&lt;your client secret&gt;</span>
+YOUTUBE_REDIRECT_URI=https://api.yourdomain.com/api/v1/auth/youtube/callback
+
+<span class="hl"># Frontend Auth</span>
+NEXTAUTH_SECRET=<span class="warn">&lt;generate a random string&gt;</span>
+NEXTAUTH_URL=https://yourdomain.com
+GOOGLE_CLIENT_ID=<span class="warn">&lt;same as YOUTUBE_CLIENT_ID&gt;</span>
+GOOGLE_CLIENT_SECRET=<span class="warn">&lt;same as YOUTUBE_CLIENT_SECRET&gt;</span></pre>
+      </div>
+
+      <!-- Step 6: Run Migrations -->
+      <div class="step">
+        <div class="step-num">6</div>
+        <div class="step-content">
+          <h3>Run Migrations Against Production DB</h3>
+        </div>
+      </div>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot r"></span>
+          <span class="terminal-dot y"></span>
+          <span class="terminal-dot g"></span>
+          <span class="terminal-title">VPS Terminal</span>
+        </div>
+        <pre><span class="cmd">cd ~/creator-os/backend</span>
+<span class="cmd">source .venv/bin/activate</span>
+<span class="cmd">alembic upgrade head</span>
+
+<span class="success">INFO  [alembic.runtime.migration] Running upgrade  -> 001, Initial schema</span></pre>
+      </div>
+
+      <!-- Step 7: Systemd Services -->
+      <div class="step">
+        <div class="step-num">7</div>
+        <div class="step-content">
+          <h3>Create Systemd Services (Auto-Start on Boot)</h3>
+        </div>
+      </div>
+
+      <p>Create service files so everything starts automatically and restarts on crash:</p>
+
+      <h4>A) FastAPI Backend</h4>
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot r"></span>
+          <span class="terminal-dot y"></span>
+          <span class="terminal-dot g"></span>
+          <span class="terminal-title">/etc/systemd/system/creator-api.service</span>
+        </div>
+        <pre><span class="cmd">sudo nano /etc/systemd/system/creator-api.service</span>
+
+[Unit]
+Description=Creator OS API
+After=network.target
+
+[Service]
+Type=exec
+User=creator
+Group=creator
+WorkingDirectory=/home/creator/creator-os/backend
+EnvironmentFile=/home/creator/creator-os/.env
+ExecStart=/home/creator/creator-os/backend/.venv/bin/gunicorn \
+    app.main:app \
+    --workers 2 \
+    --worker-class uvicorn.workers.UvicornWorker \
+    --bind 127.0.0.1:8000 \
+    --timeout 120
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target</pre>
+      </div>
+
+      <h4>B) Celery Worker</h4>
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot r"></span>
+          <span class="terminal-dot y"></span>
+          <span class="terminal-dot g"></span>
+          <span class="terminal-title">/etc/systemd/system/creator-celery.service</span>
+        </div>
+        <pre><span class="cmd">sudo nano /etc/systemd/system/creator-celery.service</span>
+
+[Unit]
+Description=Creator OS Celery Worker
+After=network.target
+
+[Service]
+Type=exec
+User=creator
+Group=creator
+WorkingDirectory=/home/creator/creator-os/backend
+EnvironmentFile=/home/creator/creator-os/.env
+ExecStart=/home/creator/creator-os/backend/.venv/bin/celery \
+    -A tasks.celery_app worker \
+    --loglevel=info \
+    --concurrency=2
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target</pre>
+      </div>
+
+      <h4>C) Celery Beat</h4>
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot r"></span>
+          <span class="terminal-dot y"></span>
+          <span class="terminal-dot g"></span>
+          <span class="terminal-title">/etc/systemd/system/creator-beat.service</span>
+        </div>
+        <pre><span class="cmd">sudo nano /etc/systemd/system/creator-beat.service</span>
+
+[Unit]
+Description=Creator OS Celery Beat
+After=network.target
+
+[Service]
+Type=exec
+User=creator
+Group=creator
+WorkingDirectory=/home/creator/creator-os/backend
+EnvironmentFile=/home/creator/creator-os/.env
+ExecStart=/home/creator/creator-os/backend/.venv/bin/celery \
+    -A tasks.celery_app beat \
+    --loglevel=info
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target</pre>
+      </div>
+
+      <h4>D) ChromaDB</h4>
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot r"></span>
+          <span class="terminal-dot y"></span>
+          <span class="terminal-dot g"></span>
+          <span class="terminal-title">/etc/systemd/system/creator-chroma.service</span>
+        </div>
+        <pre><span class="cmd">sudo nano /etc/systemd/system/creator-chroma.service</span>
+
+[Unit]
+Description=Creator OS ChromaDB
+After=network.target
+
+[Service]
+Type=exec
+User=creator
+Group=creator
+WorkingDirectory=/home/creator/creator-os
+ExecStart=/home/creator/creator-os/backend/.venv/bin/chroma run \
+    --host 127.0.0.1 \
+    --port 8100 \
+    --path /home/creator/creator-os/chroma_data
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target</pre>
+      </div>
+
+      <h4>Enable &amp; Start All Services</h4>
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot r"></span>
+          <span class="terminal-dot y"></span>
+          <span class="terminal-dot g"></span>
+          <span class="terminal-title">Terminal (as root)</span>
+        </div>
+        <pre><span class="cmd">sudo systemctl daemon-reload</span>
+
+<span class="comment"># Enable (start on boot)</span>
+<span class="cmd">sudo systemctl enable creator-chroma creator-api creator-celery creator-beat</span>
+
+<span class="comment"># Start now</span>
+<span class="cmd">sudo systemctl start creator-chroma</span>
+<span class="cmd">sudo systemctl start creator-api</span>
+<span class="cmd">sudo systemctl start creator-celery</span>
+<span class="cmd">sudo systemctl start creator-beat</span>
+
+<span class="comment"># Check status</span>
+<span class="cmd">sudo systemctl status creator-api</span>
+<span class="success">● creator-api.service - Creator OS API
+     Active: active (running)</span></pre>
+      </div>
+
+      <!-- Step 8: Caddy -->
+      <div class="step">
+        <div class="step-num">8</div>
+        <div class="step-content">
+          <h3>Configure Caddy (Reverse Proxy + HTTPS)</h3>
+        </div>
+      </div>
+
+      <p>Caddy automatically provisions and renews SSL certificates from Let's Encrypt:</p>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot r"></span>
+          <span class="terminal-dot y"></span>
+          <span class="terminal-dot g"></span>
+          <span class="terminal-title">/etc/caddy/Caddyfile</span>
+        </div>
+        <pre><span class="cmd">sudo nano /etc/caddy/Caddyfile</span>
+
+<span class="hl">api.yourdomain.com</span> {
+    reverse_proxy localhost:8000
+
+    <span class="comment"># WebSocket support</span>
+    @websocket {
+        header Connection *Upgrade*
+        header Upgrade    websocket
+    }
+    reverse_proxy @websocket localhost:8000
+
+    <span class="comment"># Security headers</span>
+    header {
+        X-Content-Type-Options nosniff
+        X-Frame-Options DENY
+        Referrer-Policy strict-origin-when-cross-origin
+    }
+}
+
+<span class="comment"># Reload Caddy:</span></pre>
+      </div>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot r"></span>
+          <span class="terminal-dot y"></span>
+          <span class="terminal-dot g"></span>
+          <span class="terminal-title">Terminal</span>
+        </div>
+        <pre><span class="cmd">sudo systemctl restart caddy</span>
+<span class="cmd">sudo systemctl status caddy</span>
+<span class="success">● caddy.service - Caddy
+     Active: active (running)</span></pre>
+      </div>
+
+      <!-- Step 9: DNS -->
+      <div class="step">
+        <div class="step-num">9</div>
+        <div class="step-content">
+          <h3>Configure DNS</h3>
+        </div>
+      </div>
+
+      <p>In your domain registrar or Cloudflare:</p>
+      <table>
+        <thead><tr><th>Type</th><th>Name</th><th>Value</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td>A</td><td><code>api</code></td><td><code>YOUR_SERVER_IP</code></td><td>Backend API</td></tr>
+          <tr><td>CNAME</td><td><code>@</code> or <code>www</code></td><td><code>cname.vercel-dns.com</code></td><td>Frontend (Vercel)</td></tr>
+        </tbody>
+      </table>
+
+      <!-- Step 10: Frontend on Vercel -->
+      <div class="step">
+        <div class="step-num">10</div>
+        <div class="step-content">
+          <h3>Deploy Frontend to Vercel (Free)</h3>
+        </div>
+      </div>
+
+      <ol>
+        <li>Push your code to GitHub</li>
+        <li>Go to <a href="https://vercel.com">vercel.com</a> and import your repository</li>
+        <li>Set the <strong>Root Directory</strong> to <code>frontend</code></li>
+        <li>Add environment variables in Vercel's dashboard:
+          <ul>
+            <li><code>NEXT_PUBLIC_API_URL</code> = <code>https://api.yourdomain.com</code></li>
+            <li><code>NEXTAUTH_URL</code> = <code>https://yourdomain.com</code></li>
+            <li><code>NEXTAUTH_SECRET</code> = <em>(same as .env)</em></li>
+            <li><code>GOOGLE_CLIENT_ID</code> = <em>(your YouTube OAuth client ID)</em></li>
+            <li><code>GOOGLE_CLIENT_SECRET</code> = <em>(your YouTube OAuth client secret)</em></li>
+          </ul>
+        </li>
+        <li>Click <strong>Deploy</strong> &mdash; Vercel builds and hosts automatically</li>
+        <li>Add your custom domain in Vercel's domain settings</li>
+      </ol>
+
+      <div class="callout success">
+        <strong>Auto-deploy:</strong> Every time you push to your <code>main</code> branch, Vercel automatically rebuilds and deploys the frontend. Zero effort.
+      </div>
+    </section>
+
+    <!-- Verify -->
+    <section>
+      <h2>Verify the Deployment</h2>
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot r"></span>
+          <span class="terminal-dot y"></span>
+          <span class="terminal-dot g"></span>
+          <span class="terminal-title">Terminal (from your local machine)</span>
+        </div>
+        <pre><span class="comment"># Check backend health</span>
+<span class="cmd">curl https://api.yourdomain.com/health</span>
+<span class="success">{"status": "healthy", "version": "1.0.0"}</span>
+
+<span class="comment"># Check API docs</span>
+<span class="comment"># Open: https://api.yourdomain.com/docs</span>
+
+<span class="comment"># Check frontend</span>
+<span class="comment"># Open: https://yourdomain.com</span>
+
+<span class="comment"># Check services on VPS</span>
+<span class="cmd">ssh root@YOUR_SERVER_IP</span>
+<span class="cmd">systemctl status creator-api creator-celery creator-beat creator-chroma</span></pre>
+      </div>
+    </section>
+
+    <!-- Updating -->
+    <section>
+      <h2>Deploying Updates</h2>
+      <p>When you push new code:</p>
+
+      <h4>Frontend (Automatic)</h4>
+      <p>Push to <code>main</code> &mdash; Vercel deploys automatically. Done.</p>
+
+      <h4>Backend (Manual, ~30 seconds)</h4>
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot r"></span>
+          <span class="terminal-dot y"></span>
+          <span class="terminal-dot g"></span>
+          <span class="terminal-title">SSH into VPS</span>
+        </div>
+        <pre><span class="cmd">ssh root@YOUR_SERVER_IP</span>
+<span class="cmd">su - creator</span>
+<span class="cmd">cd ~/creator-os</span>
+
+<span class="comment"># Pull latest code</span>
+<span class="cmd">git pull origin main</span>
+
+<span class="comment"># Install any new dependencies</span>
+<span class="cmd">cd backend && source .venv/bin/activate</span>
+<span class="cmd">pip install -e ".[dev]"</span>
+
+<span class="comment"># Run new migrations (if any)</span>
+<span class="cmd">alembic upgrade head</span>
+
+<span class="comment"># Restart services</span>
+<span class="cmd">sudo systemctl restart creator-api creator-celery creator-beat</span></pre>
+      </div>
+
+      <div class="callout info">
+        <strong>Automate this!</strong> You can set up a simple GitHub webhook or use GitHub Actions to SSH into your VPS and run these commands automatically on push. But for a few users, manual deploy is fine.
+      </div>
+    </section>
+
+    <!-- Monitoring -->
+    <section>
+      <h2>Monitoring &amp; Logs</h2>
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot r"></span>
+          <span class="terminal-dot y"></span>
+          <span class="terminal-dot g"></span>
+          <span class="terminal-title">Useful commands</span>
+        </div>
+        <pre><span class="comment"># View live API logs</span>
+<span class="cmd">sudo journalctl -u creator-api -f</span>
+
+<span class="comment"># View Celery worker logs</span>
+<span class="cmd">sudo journalctl -u creator-celery -f</span>
+
+<span class="comment"># View all Creator OS logs together</span>
+<span class="cmd">sudo journalctl -u 'creator-*' -f</span>
+
+<span class="comment"># Check disk usage</span>
+<span class="cmd">df -h</span>
+
+<span class="comment"># Check memory usage</span>
+<span class="cmd">free -h</span>
+
+<span class="comment"># Check CPU usage</span>
+<span class="cmd">htop</span></pre>
+      </div>
+
+      <h3>Free Monitoring Tools</h3>
+      <table>
+        <thead><tr><th>Tool</th><th>Purpose</th><th>Cost</th></tr></thead>
+        <tbody>
+          <tr><td><strong>UptimeRobot</strong></td><td>Uptime monitoring + alerts (50 monitors free)</td><td>Free</td></tr>
+          <tr><td><strong>Sentry</strong></td><td>Error tracking (5K events/mo free)</td><td>Free</td></tr>
+          <tr><td><strong>Vercel Analytics</strong></td><td>Frontend performance and web vitals</td><td>Free (with Vercel)</td></tr>
+          <tr><td><strong>journalctl</strong></td><td>Built-in systemd log viewer</td><td>Free (included)</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Backups -->
+    <section>
+      <h2>Backups</h2>
+
+      <div class="card-grid">
+        <div class="card">
+          <h4>PostgreSQL (Neon)</h4>
+          <p>Neon handles backups automatically with point-in-time recovery on the free tier. No action needed.</p>
+        </div>
+        <div class="card">
+          <h4>Neo4j (Aura)</h4>
+          <p>Aura Free includes daily automatic backups. You can also export via <code>CALL apoc.export.json.all()</code> periodically.</p>
+        </div>
+        <div class="card">
+          <h4>ChromaDB (VPS)</h4>
+          <p>Data lives in <code>~/creator-os/chroma_data/</code>. Set up a cron job to tar and upload to cloud storage weekly.</p>
+        </div>
+        <div class="card">
+          <h4>Code</h4>
+          <p>It's in Git. Push regularly. That's your backup.</p>
+        </div>
+      </div>
+
+      <h4>Simple ChromaDB Backup Script</h4>
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot r"></span>
+          <span class="terminal-dot y"></span>
+          <span class="terminal-dot g"></span>
+          <span class="terminal-title">backup-chroma.sh (cron weekly)</span>
+        </div>
+        <pre><span class="comment">#!/bin/bash</span>
+<span class="cmd">DATE=$(date +%Y%m%d)</span>
+<span class="cmd">tar -czf /home/creator/backups/chroma-$DATE.tar.gz /home/creator/creator-os/chroma_data</span>
+<span class="comment"># Keep only last 4 backups</span>
+<span class="cmd">ls -t /home/creator/backups/chroma-*.tar.gz | tail -n +5 | xargs rm -f</span>
+
+<span class="comment"># Add to crontab: crontab -e</span>
+<span class="comment"># 0 4 * * 0 /home/creator/backup-chroma.sh</span></pre>
+      </div>
+    </section>
+
+    <!-- Scaling -->
+    <section>
+      <h2>When to Scale</h2>
+      <p>This setup comfortably handles <strong>1&ndash;10 active users</strong>. Here's when and how to scale:</p>
+
+      <table>
+        <thead><tr><th>Signal</th><th>Bottleneck</th><th>Action</th><th>New Cost</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>API response &gt; 2s</td>
+            <td>VPS CPU/RAM</td>
+            <td>Upgrade to CX32 (4 vCPU, 8 GB)</td>
+            <td>$8/mo</td>
+          </tr>
+          <tr>
+            <td>Neon hits 0.5 GB</td>
+            <td>DB storage</td>
+            <td>Upgrade Neon to Launch ($19/mo) or self-host on VPS</td>
+            <td>$0&ndash;$19/mo</td>
+          </tr>
+          <tr>
+            <td>Upstash 10K cmds/day limit</td>
+            <td>Redis commands</td>
+            <td>Upgrade to Pay-as-you-go ($0.2/100K cmds)</td>
+            <td>~$2/mo</td>
+          </tr>
+          <tr>
+            <td>Neo4j Aura 200K node limit</td>
+            <td>Graph size</td>
+            <td>Upgrade to Aura Pro ($65/mo) or self-host on VPS</td>
+            <td>$0&ndash;$65/mo</td>
+          </tr>
+          <tr>
+            <td>10+ concurrent agent runs</td>
+            <td>Celery workers</td>
+            <td>Increase concurrency or add a second VPS for workers</td>
+            <td>$4.50/mo</td>
+          </tr>
+          <tr>
+            <td>50+ users</td>
+            <td>Everything</td>
+            <td>Time to containerize and use a proper orchestrator (K8s, Fly.io)</td>
+            <td>$50&ndash;$150/mo</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Security Checklist -->
+    <section>
+      <h2>Production Security Checklist</h2>
+      <ul>
+        <li><strong>SSH key only</strong> &mdash; Disable password SSH: <code>PasswordAuthentication no</code> in <code>/etc/ssh/sshd_config</code></li>
+        <li><strong>Firewall</strong> &mdash; Only allow ports 22 (SSH), 80, 443: <code>ufw allow 22,80,443/tcp && ufw enable</code></li>
+        <li><strong>No root login</strong> &mdash; App runs as <code>creator</code> user, not root</li>
+        <li><strong>HTTPS everywhere</strong> &mdash; Caddy auto-provisions SSL certificates</li>
+        <li><strong>Secrets in .env</strong> &mdash; Never commit <code>.env</code> to Git (already in <code>.gitignore</code>)</li>
+        <li><strong>Update regularly</strong> &mdash; <code>apt update && apt upgrade</code> weekly</li>
+        <li><strong>Set APP_ENV=production</strong> &mdash; Disables debug mode and detailed error messages</li>
+        <li><strong>CORS locked</strong> &mdash; Backend only accepts requests from your frontend domain</li>
+        <li><strong>Rate limiting active</strong> &mdash; Already built into the app via Redis</li>
+      </ul>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot r"></span>
+          <span class="terminal-dot y"></span>
+          <span class="terminal-dot g"></span>
+          <span class="terminal-title">Quick security setup</span>
+        </div>
+        <pre><span class="comment"># Set up firewall</span>
+<span class="cmd">sudo ufw default deny incoming</span>
+<span class="cmd">sudo ufw default allow outgoing</span>
+<span class="cmd">sudo ufw allow 22/tcp</span>
+<span class="cmd">sudo ufw allow 80/tcp</span>
+<span class="cmd">sudo ufw allow 443/tcp</span>
+<span class="cmd">sudo ufw enable</span>
+
+<span class="comment"># Disable root SSH login</span>
+<span class="cmd">sudo sed -i 's/PermitRootLogin yes/PermitRootLogin no/' /etc/ssh/sshd_config</span>
+<span class="cmd">sudo systemctl restart sshd</span>
+
+<span class="comment"># Auto security updates</span>
+<span class="cmd">sudo apt install unattended-upgrades</span>
+<span class="cmd">sudo dpkg-reconfigure -plow unattended-upgrades</span></pre>
+      </div>
+    </section>
+
+    <!-- Cost Summary -->
+    <section>
+      <h2>Total Cost Summary</h2>
+
+      <div class="card-grid">
+        <div class="card" style="text-align:center;">
+          <h4>1&ndash;3 Users</h4>
+          <div class="price">~$12/mo</div>
+          <div class="price-note">$5.50 infra + ~$6 AI APIs</div>
+        </div>
+        <div class="card" style="text-align:center;">
+          <h4>5&ndash;10 Users</h4>
+          <div class="price">~$35/mo</div>
+          <div class="price-note">$8 infra + ~$27 AI APIs</div>
+        </div>
+        <div class="card" style="text-align:center;">
+          <h4>10&ndash;50 Users</h4>
+          <div class="price">~$120/mo</div>
+          <div class="price-note">$30 infra + ~$90 AI APIs</div>
+        </div>
+      </div>
+
+      <div class="callout money">
+        <strong>The biggest cost is always AI API usage</strong>, not infrastructure.
+        The cheapest way to control costs is to:
+        (1) cache aggressively (already built in),
+        (2) use cheaper models for simple tasks (Haiku for scoring, Sonnet for writing),
+        (3) set token limits per request.
+        Infrastructure stays cheap until you have 50+ active users.
+      </div>
+    </section>
+
+  </div>
+
+  <footer>
+    Creator OS &mdash; Phase 1 Documentation &copy; 2026
+  </footer>
+
+</body>
+</html>

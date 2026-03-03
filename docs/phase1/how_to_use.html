@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Creator OS &mdash; How to Use</title>
+  <style>
+    :root {
+      --bg: #0f111a;
+      --surface: #1a1d2e;
+      --surface2: #222540;
+      --border: #2a2d3e;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --accent: #818cf8;
+      --accent2: #34d399;
+      --accent3: #f472b6;
+      --accent4: #fbbf24;
+      --accent5: #38bdf8;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+    .container { max-width: 920px; margin: 0 auto; padding: 3rem 2rem; }
+
+    .hero {
+      text-align: center;
+      padding: 4rem 2rem;
+      background: linear-gradient(135deg, #4c1d95 0%, #0f111a 50%, #064e3b 100%);
+      border-bottom: 1px solid var(--border);
+    }
+    .hero h1 { font-size: 2.8rem; font-weight: 800; margin-bottom: 0.5rem; }
+    .hero h1 span { color: var(--accent3); }
+    .hero .subtitle { color: var(--muted); font-size: 1.15rem; max-width: 600px; margin: 0 auto; }
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-radius: 9999px;
+      margin-bottom: 1rem;
+      background: rgba(244,114,182,0.15);
+      color: var(--accent3);
+      border: 1px solid rgba(244,114,182,0.3);
+    }
+    nav {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0.75rem 2rem;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin: 0 1rem;
+      transition: color 0.2s;
+    }
+    nav a:hover, nav a.active { color: var(--accent); }
+
+    section { margin-bottom: 3rem; }
+    h2 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--accent3);
+      display: inline-block;
+    }
+    h3 { font-size: 1.15rem; font-weight: 600; margin: 1.5rem 0 0.5rem; color: var(--accent); }
+    h4 { font-size: 1rem; font-weight: 600; margin: 1rem 0 0.4rem; color: var(--accent5); }
+    p { margin-bottom: 1rem; color: var(--muted); }
+    ul, ol { margin: 0.5rem 0 1.5rem 1.5rem; color: var(--muted); }
+    li { margin-bottom: 0.5rem; }
+    li strong { color: var(--text); }
+    code {
+      background: var(--surface2);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.85em;
+      color: var(--accent);
+      font-family: 'Cascadia Code', 'Fira Code', monospace;
+    }
+
+    /* Scenario intro */
+    .persona {
+      background: linear-gradient(135deg, var(--surface) 0%, var(--surface2) 100%);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      margin: 1.5rem 0;
+      display: flex;
+      gap: 1.5rem;
+      align-items: flex-start;
+    }
+    .persona-avatar {
+      font-size: 3rem;
+      flex-shrink: 0;
+    }
+    .persona-info h3 { margin-top: 0; color: var(--text); font-size: 1.2rem; }
+    .persona-info p { margin-bottom: 0.5rem; }
+    .persona-stats {
+      display: flex;
+      gap: 1.5rem;
+      margin-top: 0.75rem;
+    }
+    .persona-stat {
+      text-align: center;
+    }
+    .persona-stat .val {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .persona-stat .label {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    /* Journey steps */
+    .journey-step {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      margin: 1.5rem 0;
+      position: relative;
+      border-left: 4px solid var(--accent);
+    }
+    .journey-step.green { border-left-color: var(--accent2); }
+    .journey-step.pink { border-left-color: var(--accent3); }
+    .journey-step.yellow { border-left-color: var(--accent4); }
+    .journey-step.blue { border-left-color: var(--accent5); }
+    .journey-step .step-badge {
+      position: absolute;
+      top: -12px;
+      left: 20px;
+      padding: 0.2rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .journey-step .step-badge.purple { background: var(--accent); color: white; }
+    .journey-step .step-badge.green { background: var(--accent2); color: #0f111a; }
+    .journey-step .step-badge.pink { background: var(--accent3); color: white; }
+    .journey-step .step-badge.yellow { background: var(--accent4); color: #0f111a; }
+    .journey-step .step-badge.blue { background: var(--accent5); color: #0f111a; }
+    .journey-step h3 { margin-top: 0.25rem; color: var(--text); }
+
+    /* What you see boxes */
+    .screen-preview {
+      background: #0d1117;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin: 1rem 0;
+      overflow: hidden;
+    }
+    .screen-header {
+      background: var(--surface);
+      padding: 0.5rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .screen-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    .screen-dot.r { background: #f87171; }
+    .screen-dot.y { background: #fbbf24; }
+    .screen-dot.g { background: #34d399; }
+    .screen-title { color: var(--muted); font-size: 0.75rem; margin-left: 0.5rem; }
+    .screen-body {
+      padding: 1.25rem;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      color: var(--muted);
+      font-family: 'Cascadia Code', 'Fira Code', monospace;
+      white-space: pre-wrap;
+    }
+    .screen-body .hl { color: var(--accent); }
+    .screen-body .g { color: var(--accent2); }
+    .screen-body .p { color: var(--accent3); }
+    .screen-body .y { color: var(--accent4); }
+
+    /* Action indicator */
+    .action {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: rgba(129,140,248,0.1);
+      border: 1px solid rgba(129,140,248,0.25);
+      border-radius: 6px;
+      padding: 0.3rem 0.7rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin: 0.25rem 0.25rem 0.25rem 0;
+    }
+    .action.click { background: rgba(52,211,153,0.1); border-color: rgba(52,211,153,0.25); color: var(--accent2); }
+    .action.wait { background: rgba(251,191,36,0.1); border-color: rgba(251,191,36,0.25); color: var(--accent4); }
+    .action.review { background: rgba(244,114,182,0.1); border-color: rgba(244,114,182,0.25); color: var(--accent3); }
+
+    /* Tip boxes */
+    .tip {
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      margin: 1rem 0;
+      border-left: 4px solid var(--accent2);
+      background: rgba(52,211,153,0.06);
+      font-size: 0.9rem;
+    }
+    .tip strong { color: var(--accent2); }
+
+    /* Timeline */
+    .timeline {
+      margin: 2rem 0;
+      padding-left: 2rem;
+      border-left: 2px solid var(--border);
+    }
+    .timeline-item {
+      position: relative;
+      padding-bottom: 2rem;
+    }
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -2.35rem;
+      top: 0.25rem;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: 2px solid var(--bg);
+    }
+    .timeline-item.done::before { background: var(--accent2); }
+    .timeline-item h4 { margin-top: 0; color: var(--text); }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.25rem;
+      margin: 1.5rem 0;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+    .card:hover { border-color: var(--accent); }
+    .card h4 { color: var(--text); margin-top: 0; }
+    .card p { font-size: 0.9rem; margin-bottom: 0; }
+
+    footer {
+      text-align: center;
+      padding: 2rem;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="hero">
+    <div class="badge">User Guide</div>
+    <h1>How to Use Creator <span>OS</span></h1>
+    <p class="subtitle">
+      A step-by-step walkthrough for YouTube creators &mdash; from connecting your channel to publishing optimized content.
+    </p>
+  </header>
+
+  <nav>
+    <a href="scope.html">Scope</a>
+    <a href="design.html">Design</a>
+    <a href="quickstart.html">Quick Start</a>
+    <a href="how_to_use.html" class="active">How to Use</a>
+    <a href="local.html">Local Setup</a>
+    <a href="deploy.html">Deploy</a>
+  </nav>
+
+  <div class="container">
+
+    <!-- Meet the Creator -->
+    <section>
+      <h2>Meet Priya &mdash; Our Example Creator</h2>
+      <p>Let's follow a real-world scenario. Priya is a tech education YouTuber who wants to use Creator OS to streamline her content workflow.</p>
+
+      <div class="persona">
+        <div class="persona-avatar">&#128105;&#8205;&#128187;</div>
+        <div class="persona-info">
+          <h3>Priya &mdash; Tech Education Creator</h3>
+          <p>Priya runs a YouTube channel about web development tutorials, coding career advice, and tech industry news. She posts 2 videos per week and wants to grow from 45K to 100K subscribers.</p>
+          <div class="persona-stats">
+            <div class="persona-stat">
+              <div class="val">45K</div>
+              <div class="label">Subscribers</div>
+            </div>
+            <div class="persona-stat">
+              <div class="val">120</div>
+              <div class="label">Videos</div>
+            </div>
+            <div class="persona-stat">
+              <div class="val">2/week</div>
+              <div class="label">Upload Pace</div>
+            </div>
+            <div class="persona-stat">
+              <div class="val">6.2%</div>
+              <div class="label">Avg CTR</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Step 1: Onboarding -->
+    <section>
+      <h2>Step 1: Onboarding &amp; YouTube Connection</h2>
+
+      <div class="journey-step">
+        <div class="step-badge purple">First Time Setup</div>
+        <h3>Connect Your YouTube Channel</h3>
+        <p>When Priya first opens Creator OS, she sees the landing page with a prominent "Connect YouTube" button.</p>
+
+        <h4>What Priya Does:</h4>
+        <ol>
+          <li><span class="action click">Click</span> <strong>"Connect with YouTube"</strong> on the landing page</li>
+          <li>Google's OAuth consent screen appears &mdash; Priya reviews the permissions (read channel data, analytics, captions)</li>
+          <li><span class="action click">Click</span> <strong>"Allow"</strong> to grant access</li>
+          <li>She is automatically redirected back to the Creator OS dashboard</li>
+        </ol>
+
+        <h4>What Happens Behind the Scenes:</h4>
+        <ul>
+          <li>Creator OS receives an OAuth token and securely encrypts it in the database</li>
+          <li>The platform fetches Priya's channel info: name, subscriber count, video list</li>
+          <li>Her account is created and she's logged in</li>
+        </ul>
+
+        <div class="tip">
+          <strong>Tip:</strong> Creator OS only requests read-only access to your YouTube data. It never uploads, deletes, or modifies anything on your channel.
+        </div>
+      </div>
+    </section>
+
+    <!-- Step 2: Build Creator DNA -->
+    <section>
+      <h2>Step 2: Build Your Creator DNA</h2>
+
+      <div class="journey-step green">
+        <div class="step-badge green">Important - Do This First</div>
+        <h3>Teach the AI Your Voice</h3>
+        <p>
+          Before using any content generation features, Priya needs to build her Creator DNA fingerprint.
+          This is what makes Creator OS output sound like <em>her</em>, not generic AI.
+        </p>
+
+        <h4>What Priya Does:</h4>
+        <ol>
+          <li>Navigate to <span class="action click">Profile</span> in the sidebar</li>
+          <li><span class="action click">Click</span> <strong>"Build Creator DNA"</strong></li>
+          <li><span class="action wait">Wait</span> 2&ndash;5 minutes while the AI analyzes her videos</li>
+          <li>Review the DNA profile that appears: a radar chart and voice characteristics</li>
+        </ol>
+
+        <h4>What Happens Behind the Scenes:</h4>
+        <ul>
+          <li>Creator OS fetches transcripts from Priya's 20 most recent videos</li>
+          <li>Claude AI analyzes each transcript for 14 stylistic dimensions (vocabulary, humor, pacing, formality, etc.)</li>
+          <li>Results are aggregated into a single <strong>Creator DNA Fingerprint</strong></li>
+          <li>A 768-dimensional embedding vector is generated and stored</li>
+          <li>Confidence score is calculated (with 20 videos: ~90%)</li>
+        </ul>
+
+        <div class="screen-preview">
+          <div class="screen-header">
+            <span class="screen-dot r"></span>
+            <span class="screen-dot y"></span>
+            <span class="screen-dot g"></span>
+            <span class="screen-title">Profile &mdash; Creator DNA</span>
+          </div>
+          <div class="screen-body">
+<span class="hl">Creator DNA Fingerprint</span>                  Confidence: <span class="g">90%</span>
+
+  Vocabulary Complexity  ████████░░  0.72 (moderate-high)
+  Formality Level        ███░░░░░░░  0.28 (casual)
+  Humor Frequency        ██████░░░░  0.55 (regular)
+  Pacing                 Fast with deliberate pauses for emphasis
+  Sentence Rhythm        Varied with short punchy interjections
+  Hook Style             Question-based, bold claims
+  Humor Types            Self-deprecating, analogies, pop culture
+  CTA Style              Soft ask woven naturally into content
+
+<span class="p">  [Radar Chart]</span>
+  Vocabulary ━━━━━━━━╸
+  Formality  ━━━╸
+  Humor      ━━━━━━╸
+  Energy     ━━━━━━━━━╸
+  Technical  ━━━━━━━━╸
+  Storytelling ━━━━━━╸
+  Engagement ━━━━━━━━━╸
+  Pacing     ━━━━━━━━╸
+          </div>
+        </div>
+
+        <div class="tip">
+          <strong>Tip:</strong> Your DNA rebuilds automatically every week as you post new videos. The more videos analyzed, the more accurate it becomes. You can also trigger a manual rebuild anytime.
+        </div>
+      </div>
+    </section>
+
+    <!-- Step 3: Discover Trends -->
+    <section>
+      <h2>Step 3: Discover Trending Topics</h2>
+
+      <div class="journey-step">
+        <div class="step-badge purple">Weekly Workflow</div>
+        <h3>See What's Trending in Your Niche</h3>
+        <p>Every time Priya starts planning her next video, she checks the Trends page for fresh opportunities.</p>
+
+        <h4>What Priya Does:</h4>
+        <ol>
+          <li>Navigate to <span class="action click">Trends</span> in the sidebar</li>
+          <li>The page shows a grid of trend cards, each scored for relevance to her tech/coding niche</li>
+          <li>She can filter by:
+            <ul>
+              <li><strong>Source:</strong> Google Trends, Reddit, YouTube, News</li>
+              <li><strong>Velocity:</strong> Breakout, Rising, Steady, Declining</li>
+              <li><strong>Category:</strong> Technology, Education, etc.</li>
+            </ul>
+          </li>
+          <li>She spots a trend: <em>"Cursor AI is changing how developers code"</em> scored at 8.7/10</li>
+          <li><span class="action click">Click</span> the <strong>"Refresh Trends"</strong> button if she wants the latest data</li>
+        </ol>
+
+        <div class="screen-preview">
+          <div class="screen-header">
+            <span class="screen-dot r"></span>
+            <span class="screen-dot y"></span>
+            <span class="screen-dot g"></span>
+            <span class="screen-title">Trends &mdash; Dashboard</span>
+          </div>
+          <div class="screen-body">
+<span class="hl">Trend Scout</span>                                    [Refresh Trends]
+
+Filters: <span class="y">[All Sources ▾]</span>  <span class="y">[All Velocities ▾]</span>  <span class="y">[Technology ▾]</span>
+
+┌─────────────────────────────────┐  ┌─────────────────────────────────┐
+│ <span class="g">Score: 8.7</span>  <span class="p">🔥 Breakout</span>          │  │ <span class="g">Score: 7.9</span>  <span class="y">↗ Rising</span>            │
+│                                 │  │                                 │
+│ <span class="hl">Cursor AI is Changing How</span>       │  │ <span class="hl">React Server Components</span>        │
+│ <span class="hl">Developers Code</span>                 │  │ <span class="hl">Performance Patterns</span>           │
+│                                 │  │                                 │
+│ Sources: Google, Reddit, YT     │  │ Sources: Reddit, YouTube        │
+│ Your angle: Tutorial + Review   │  │ Your angle: Deep dive tutorial  │
+│                                 │  │                                 │
+│ [Generate Ideas]  [View Detail] │  │ [Generate Ideas]  [View Detail] │
+└─────────────────────────────────┘  └─────────────────────────────────┘
+          </div>
+        </div>
+
+        <h4>What Happens Behind the Scenes:</h4>
+        <ul>
+          <li>The <strong>Trend Scout Agent</strong> runs every 2 hours automatically (via Celery Beat)</li>
+          <li>It fetches data from 4 sources in parallel: Google Trends, Reddit, YouTube Trending, and news feeds</li>
+          <li>Each trend is scored for relevance to Priya's niche using her knowledge graph</li>
+          <li>Trends are clustered by semantic similarity and deduplicated</li>
+          <li>Niche-specific angles are generated (e.g., "Tutorial + Review" for a coding channel)</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Step 4: Generate Ideas -->
+    <section>
+      <h2>Step 4: Generate Content Ideas</h2>
+
+      <div class="journey-step pink">
+        <div class="step-badge pink">Creative Phase</div>
+        <h3>Turn Trends into Video Ideas</h3>
+        <p>Priya picks the Cursor AI trend and wants to brainstorm specific video ideas around it.</p>
+
+        <h4>What Priya Does:</h4>
+        <ol>
+          <li>Navigate to <span class="action click">Ideas</span> in the sidebar (or click "Generate Ideas" on a trend card)</li>
+          <li><span class="action click">Click</span> <strong>"Generate Ideas"</strong></li>
+          <li>Optionally provide context: <em>"I want ideas about AI coding tools, my audience loves practical tutorials"</em></li>
+          <li><span class="action wait">Wait</span> 30&ndash;60 seconds while the AI brainstorms</li>
+          <li>Review 8&ndash;12 idea cards, each with:
+            <ul>
+              <li>Title and hook</li>
+              <li>Viability score (1&ndash;10)</li>
+              <li>Content type (tutorial, review, listicle, etc.)</li>
+              <li>Key talking points</li>
+              <li>Difficulty estimate</li>
+            </ul>
+          </li>
+          <li><span class="action review">Review</span> each idea &mdash; <span class="action click">Approve</span> the ones she likes, <span class="action click">Reject</span> the rest</li>
+        </ol>
+
+        <div class="screen-preview">
+          <div class="screen-header">
+            <span class="screen-dot r"></span>
+            <span class="screen-dot y"></span>
+            <span class="screen-dot g"></span>
+            <span class="screen-title">Ideas &mdash; Generated Results</span>
+          </div>
+          <div class="screen-body">
+<span class="hl">Content Ideas</span>                        <span class="g">Agent: Completed</span>
+
+┌──────────────────────────────────────────────────────────────────┐
+│ <span class="g">Score: 9.1</span>   Tutorial   <span class="y">Medium difficulty</span>                        │
+│                                                                  │
+│ <span class="hl">"I Replaced VS Code with Cursor AI for 30 Days — Here's What</span>   │
+│ <span class="hl"> Happened"</span>                                                      │
+│                                                                  │
+│ Hook: "What if your code editor could write code FOR you?"       │
+│                                                                  │
+│ Key Points:                                                      │
+│  • Day 1: Setup and first impressions                            │
+│  • Day 15: Productivity comparison with real metrics             │
+│  • Day 30: Final verdict with side-by-side speed test            │
+│  • Honest downsides and when NOT to use it                       │
+│                                                                  │
+│               <span class="g">[✓ Approve]</span>    <span class="p">[✗ Reject]</span>    [Edit]               │
+└──────────────────────────────────────────────────────────────────┘
+          </div>
+        </div>
+
+        <h4>What Happens Behind the Scenes:</h4>
+        <ul>
+          <li>The <strong>Idea Generator Agent</strong> runs a 7-node pipeline:
+            <ol>
+              <li>Analyzes Priya's knowledge graph for content gaps</li>
+              <li>Brainstorms trend-based ideas (from current trends)</li>
+              <li>Brainstorms evergreen ideas (always relevant topics)</li>
+              <li>Cross-pollinates ideas across niches (tech + productivity, tech + career)</li>
+              <li>Scores each idea on audience demand, competition, creator fit, and trend momentum</li>
+              <li>Diversifies the output (mix of formats: tutorials, reviews, listicles)</li>
+              <li>Presents results for human approval (the <strong>Human Gate</strong>)</li>
+            </ol>
+          </li>
+        </ul>
+
+        <div class="tip">
+          <strong>Tip:</strong> Approved ideas automatically move into your Content Pipeline as "Idea" status. You can send any approved idea directly to the Script Architect.
+        </div>
+      </div>
+    </section>
+
+    <!-- Step 5: Write Scripts -->
+    <section>
+      <h2>Step 5: Generate Scripts</h2>
+
+      <div class="journey-step yellow">
+        <div class="step-badge yellow">Production Phase</div>
+        <h3>AI Writes Your Script &mdash; In Your Voice</h3>
+        <p>Priya approves the Cursor AI idea and wants a full video script.</p>
+
+        <h4>What Priya Does:</h4>
+        <ol>
+          <li>From the approved idea, <span class="action click">Click</span> <strong>"Generate Script"</strong></li>
+          <li><span class="action wait">Wait</span> 1&ndash;2 minutes while the script is generated</li>
+          <li>She can watch the script being written in real time (streaming output)</li>
+          <li>The result appears in the Script Editor with collapsible sections:
+            <ul>
+              <li><strong>Cold Open / Hook</strong> (first 30 seconds)</li>
+              <li><strong>Introduction</strong></li>
+              <li><strong>Main Content</strong> (with retention hook markers every 60&ndash;90 seconds)</li>
+              <li><strong>Climax / Key Insight</strong></li>
+              <li><strong>Call to Action</strong></li>
+              <li><strong>Outro</strong></li>
+            </ul>
+          </li>
+          <li><span class="action review">Review</span> the script and make any edits directly in the editor</li>
+          <li>Check the <strong>variant tabs</strong> for auto-generated versions:
+            <ul>
+              <li>YouTube Shorts script (60-second version)</li>
+              <li>Blog post version</li>
+              <li>Twitter/X thread version</li>
+              <li>LinkedIn article version</li>
+              <li>Newsletter version</li>
+            </ul>
+          </li>
+          <li><span class="action click">Approve</span> the script to move it to the next stage</li>
+        </ol>
+
+        <div class="screen-preview">
+          <div class="screen-header">
+            <span class="screen-dot r"></span>
+            <span class="screen-dot y"></span>
+            <span class="screen-dot g"></span>
+            <span class="screen-title">Script Editor &mdash; Cursor AI 30-Day Challenge</span>
+          </div>
+          <div class="screen-body">
+<span class="hl">Variants:</span> <span class="g">[YouTube]</span>  [Shorts]  [Blog]  [Twitter]  [LinkedIn]  [Newsletter]
+
+<span class="y">▸ COLD OPEN (0:00–0:30)</span>
+  "Last month I deleted VS Code from my computer. Not because
+  I was rage-quitting — because I found something that might
+  make it obsolete. I'm Priya, and after 30 days of using
+  Cursor AI as my only editor, I have thoughts. Strong ones."
+
+<span class="p">  ⚡ Retention Hook — Pattern interrupt at 0:25</span>
+
+<span class="y">▸ INTRODUCTION (0:30–1:30)</span>
+  "Look, I've been a VS Code loyalist for 6 years. I've got
+  keybindings muscle-memorized, extensions I'd die for, and a
+  theme I spent way too long picking. So switching editors? That
+  felt like betraying a best friend..."
+
+<span class="p">  ⚡ Retention Hook — Open loop at 1:20</span>
+  "But what happened on Day 15 genuinely shocked me."
+
+<span class="y">▸ MAIN CONTENT (1:30–8:00)</span>
+  ...
+
+<span class="y">▸ CALL TO ACTION (8:00–8:30)</span>
+  ...
+          </div>
+        </div>
+
+        <h4>What Happens Behind the Scenes:</h4>
+        <ul>
+          <li>The <strong>Script Architect Agent</strong> runs a 7-node pipeline:
+            <ol>
+              <li><strong>Research:</strong> Gathers background info on the topic via web search</li>
+              <li><strong>Outline:</strong> Creates a structured outline with timing</li>
+              <li><strong>Draft:</strong> Writes the full script using Priya's <strong>Creator DNA</strong> for voice conditioning</li>
+              <li><strong>Inject Hooks:</strong> Places retention hooks every 60&ndash;90 seconds</li>
+              <li><strong>Tone Check:</strong> Compares the script against Priya's DNA; if the match scores below 7.0/10, it auto-rewrites</li>
+              <li><strong>Generate Variants:</strong> Creates 5 platform-specific versions</li>
+              <li><strong>Human Gate:</strong> Presents for Priya's approval</li>
+            </ol>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Step 6: Optimize SEO -->
+    <section>
+      <h2>Step 6: Optimize for Search &amp; Discovery</h2>
+
+      <div class="journey-step blue">
+        <div class="step-badge blue">Optimization Phase</div>
+        <h3>Maximize Your Video's Discoverability</h3>
+        <p>With her script ready, Priya needs to optimize the title, description, tags, and thumbnail concept.</p>
+
+        <h4>What Priya Does:</h4>
+        <ol>
+          <li>Navigate to <span class="action click">SEO</span> in the sidebar (or it auto-runs after script approval in a full pipeline)</li>
+          <li>The SEO dashboard shows:
+            <ul>
+              <li><strong>5 Title Options</strong> &mdash; ranked by estimated CTR with emotional trigger and keyword analysis</li>
+              <li><strong>Optimized Description</strong> &mdash; with keyword-rich first 2 lines, timestamps, and links</li>
+              <li><strong>30 Tags</strong> &mdash; organized by relevance: primary, secondary, long-tail</li>
+              <li><strong>3 Thumbnail Concepts</strong> &mdash; text descriptions of high-CTR thumbnail ideas</li>
+              <li><strong>Overall SEO Score</strong> &mdash; 0&ndash;100 rating of the entire package</li>
+            </ul>
+          </li>
+          <li><span class="action review">Review</span> and pick her favorite title from the 5 options</li>
+          <li>Copy the description and tags to her clipboard</li>
+          <li>Use the thumbnail concepts as a brief for her designer</li>
+        </ol>
+
+        <div class="screen-preview">
+          <div class="screen-header">
+            <span class="screen-dot r"></span>
+            <span class="screen-dot y"></span>
+            <span class="screen-dot g"></span>
+            <span class="screen-title">SEO Optimizer &mdash; Results</span>
+          </div>
+          <div class="screen-body">
+<span class="hl">SEO Package</span>                               Score: <span class="g">87/100</span>
+
+<span class="y">TITLE OPTIONS:</span>
+  <span class="g">1.</span> I Replaced VS Code with Cursor AI for 30 Days (Honest Review)
+  <span class="g">2.</span> Cursor AI vs VS Code: 30-Day Challenge Results Shocked Me
+  <span class="g">3.</span> Why I'm Ditching VS Code for Cursor AI in 2026
+  <span class="g">4.</span> 30 Days with Cursor AI: The VS Code Killer?
+  <span class="g">5.</span> I Coded with Cursor AI for a Month — Here's My Verdict
+
+<span class="y">DESCRIPTION:</span> (first 2 lines shown in search)
+  After 30 days of using Cursor AI as my only code editor,
+  I'm sharing my honest review with real productivity data...
+
+<span class="y">TAGS:</span> (30 tags)
+  cursor ai, cursor ai review, vs code alternative, ai code
+  editor, cursor ide, cursor vs code, ai coding tools 2026...
+
+<span class="y">THUMBNAIL CONCEPTS:</span>
+  <span class="p">1.</span> Split screen: VS Code logo (faded) vs Cursor logo (glowing)
+     with "30 DAYS" text overlay and shocked face
+  <span class="p">2.</span> ...
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Step 7: Content Pipeline -->
+    <section>
+      <h2>Step 7: Track Content Through the Pipeline</h2>
+
+      <div class="journey-step green">
+        <div class="step-badge green">Management</div>
+        <h3>Kanban Board for Your Content</h3>
+        <p>Priya uses the Content page to track all her content pieces through the production pipeline.</p>
+
+        <h4>What Priya Does:</h4>
+        <ol>
+          <li>Navigate to <span class="action click">Content</span> in the sidebar</li>
+          <li>See a kanban board with 5 columns:
+            <ul>
+              <li><strong>Idea</strong> &mdash; Approved ideas waiting for scripts</li>
+              <li><strong>Draft</strong> &mdash; Scripts being written or edited</li>
+              <li><strong>Review</strong> &mdash; Content ready for final review</li>
+              <li><strong>Optimized</strong> &mdash; SEO package attached, ready to film</li>
+              <li><strong>Published</strong> &mdash; Live on YouTube, tracked by analytics</li>
+            </ul>
+          </li>
+          <li>Drag cards between columns to update their status</li>
+          <li>Click any card to see its full details, script, and SEO package</li>
+        </ol>
+
+        <div class="tip">
+          <strong>Tip:</strong> When you run the full pipeline (Trend &rarr; Idea &rarr; Script &rarr; SEO), cards move through columns automatically. You only need to approve at each human gate.
+        </div>
+      </div>
+    </section>
+
+    <!-- Step 8: Monitor Performance -->
+    <section>
+      <h2>Step 8: Analyze Video Performance</h2>
+
+      <div class="journey-step">
+        <div class="step-badge purple">After Publishing</div>
+        <h3>Learn What Works and Improve</h3>
+        <p>After Priya publishes her video, Creator OS automatically tracks its performance.</p>
+
+        <h4>What Priya Does:</h4>
+        <ol>
+          <li>Navigate to <span class="action click">Analytics</span> in the sidebar</li>
+          <li>See an overview dashboard with:
+            <ul>
+              <li><strong>Channel metrics:</strong> total views, subscribers gained, watch hours</li>
+              <li><strong>Video-level performance:</strong> views, CTR, avg. view duration, retention curve</li>
+              <li><strong>AI Insights:</strong> automatically generated analysis explaining <em>why</em> a video performed well or poorly</li>
+            </ul>
+          </li>
+          <li>Read insights like: <em>"Your Cursor AI video has 2.3x higher CTR than your channel average. The question-format title and split-screen thumbnail drove higher click rates."</em></li>
+        </ol>
+
+        <h4>What Happens Behind the Scenes:</h4>
+        <ul>
+          <li>The <strong>Performance Analyst Agent</strong> syncs YouTube analytics every 6 hours (automatic via Celery)</li>
+          <li>It computes derived metrics (engagement rate, growth velocity, audience retention patterns)</li>
+          <li>Detects patterns across videos (best publishing times, optimal video length, top-performing formats)</li>
+          <li>Generates actionable insights using AI analysis</li>
+          <li><strong>Crucially:</strong> These insights are fed back into the other agents:
+            <ul>
+              <li>Trend Scout learns which topic areas perform best for Priya</li>
+              <li>Idea Generator adjusts idea scoring based on what actually works</li>
+              <li>Script Architect learns preferred video length and pacing</li>
+              <li>SEO Optimizer learns which title patterns drive the highest CTR</li>
+            </ul>
+          </li>
+        </ul>
+
+        <div class="tip">
+          <strong>Tip:</strong> The feedback loop means Creator OS gets smarter the more you use it. After 10+ videos tracked, the recommendations become significantly more personalized.
+        </div>
+      </div>
+    </section>
+
+    <!-- Step 9: Media Kit -->
+    <section>
+      <h2>Step 9: Generate a Professional Media Kit</h2>
+
+      <div class="journey-step pink">
+        <div class="step-badge pink">Monetization</div>
+        <h3>Land Brand Deals with Data</h3>
+        <p>When a brand reaches out about a sponsorship, Priya needs a professional media kit with up-to-date stats.</p>
+
+        <h4>What Priya Does:</h4>
+        <ol>
+          <li>Navigate to <span class="action click">Media Kit</span> in the sidebar</li>
+          <li><span class="action click">Click</span> <strong>"Generate Media Kit"</strong></li>
+          <li><span class="action wait">Wait</span> 30 seconds while the agent compiles data</li>
+          <li>Review the generated media kit which includes:
+            <ul>
+              <li>Channel overview (subscribers, total views, niche)</li>
+              <li>Audience demographics (age, gender, location, interests)</li>
+              <li>Growth metrics (subscriber trend, views trend, engagement rate)</li>
+              <li>Top performing videos</li>
+              <li>Brand safety score</li>
+              <li>Suggested rate card (based on channel size and engagement)</li>
+            </ul>
+          </li>
+          <li>Edit any section (bio, contact email, niche description)</li>
+          <li><span class="action click">Click</span> <strong>"Download PDF"</strong> to get a print-ready media kit</li>
+          <li>Optionally share the <strong>public link</strong> with brands</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- Full Pipeline -->
+    <section>
+      <h2>Running the Full Pipeline</h2>
+      <p>
+        Instead of running each agent separately, Priya can trigger the <strong>full pipeline</strong>
+        which chains all agents together automatically:
+      </p>
+
+      <div class="screen-preview">
+        <div class="screen-header">
+          <span class="screen-dot r"></span>
+          <span class="screen-dot y"></span>
+          <span class="screen-dot g"></span>
+          <span class="screen-title">Orchestrator &mdash; Full Pipeline</span>
+        </div>
+        <div class="screen-body">
+<span class="hl">Pipeline Progress</span>
+
+  <span class="g">[ ● Trend Scout ]</span> ──── <span class="g">[ ● Idea Generator ]</span> ──── <span class="y">[ ◉ Script Architect ]</span> ──── [ ○ SEO Optimizer ]
+      <span class="g">Completed</span>              <span class="g">Completed</span>              <span class="y">Running...</span>               Pending
+
+<span class="hl">Current Step:</span> Script Architect → Drafting script (node 3/7)
+
+<span class="y">Live Output:</span>
+  "Last month I deleted VS Code from my computer. Not because
+  I was rage-quitting — because I found something that..."
+  <span class="hl">█</span> (streaming)
+        </div>
+      </div>
+
+      <h4>How to Run the Full Pipeline:</h4>
+      <ol>
+        <li>From any page, the Orchestrator can be triggered via the API or a "Run Pipeline" button</li>
+        <li>The Workflow Visualizer shows progress across all 4 agent stages</li>
+        <li>At each <strong>Human Gate</strong> (after ideas, after script), the pipeline pauses and waits for Priya's approval</li>
+        <li>Priya reviews, approves (or edits), and the pipeline continues</li>
+        <li>Final output: a complete content package with script, SEO metadata, and multi-platform variants</li>
+      </ol>
+    </section>
+
+    <!-- Weekly Workflow -->
+    <section>
+      <h2>Priya's Weekly Workflow</h2>
+      <p>Here's how Priya's typical week looks with Creator OS:</p>
+
+      <div class="timeline">
+        <div class="timeline-item done">
+          <h4>Monday Morning (15 min)</h4>
+          <p>Check Trends page for fresh opportunities. Skim top-scored trends. Click "Generate Ideas" on 2&ndash;3 interesting trends.</p>
+        </div>
+        <div class="timeline-item done">
+          <h4>Monday Afternoon (20 min)</h4>
+          <p>Review generated ideas. Approve 2&ndash;3 for the week. Send top pick to Script Architect.</p>
+        </div>
+        <div class="timeline-item done">
+          <h4>Tuesday (30 min)</h4>
+          <p>Review the generated script. Make personal edits. Approve and run SEO Optimizer. Copy title, description, tags.</p>
+        </div>
+        <div class="timeline-item done">
+          <h4>Wednesday</h4>
+          <p>Film and edit (Creator OS not needed here — this is creative time!)</p>
+        </div>
+        <div class="timeline-item done">
+          <h4>Thursday</h4>
+          <p>Upload to YouTube using the SEO package. Copy the Shorts script for a companion video. Schedule blog post from the blog variant.</p>
+        </div>
+        <div class="timeline-item done">
+          <h4>Friday (10 min)</h4>
+          <p>Check Analytics for last week's video performance. Read AI insights. Repeat the cycle for Video #2.</p>
+        </div>
+        <div class="timeline-item">
+          <h4>Ongoing (Automatic)</h4>
+          <p>Creator OS runs in the background: trends refresh every 2 hours, analytics sync every 6 hours, DNA rebuilds weekly.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Settings -->
+    <section>
+      <h2>Configuring Your Experience</h2>
+      <p>Navigate to <strong>Settings</strong> in the sidebar to customize Creator OS:</p>
+
+      <div class="card-grid">
+        <div class="card">
+          <h4>Agent Configuration</h4>
+          <p>Choose which AI model to use (Claude or OpenAI), set temperature for creativity level, adjust max output tokens.</p>
+        </div>
+        <div class="card">
+          <h4>Human-in-the-Loop Gates</h4>
+          <p>Toggle which gates are enabled. Disable gates for a fully automated pipeline, or enable all for maximum control.</p>
+        </div>
+        <div class="card">
+          <h4>API Connections</h4>
+          <p>View status of YouTube, Google Trends, Reddit, and News API connections. Re-authenticate if needed.</p>
+        </div>
+        <div class="card">
+          <h4>Theme</h4>
+          <p>Switch between dark and light modes, or follow your system preference.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tips -->
+    <section>
+      <h2>Pro Tips for Getting the Most Out of Creator OS</h2>
+
+      <div class="card-grid">
+        <div class="card">
+          <h4>1. Build DNA First</h4>
+          <p>Always build your Creator DNA before generating scripts. Without it, the AI writes generic content instead of matching your voice.</p>
+        </div>
+        <div class="card">
+          <h4>2. Edit, Don't Rewrite</h4>
+          <p>The AI gets you 80% there. Spend your time adding personal anecdotes and polishing the last 20% rather than rewriting from scratch.</p>
+        </div>
+        <div class="card">
+          <h4>3. Use the Full Pipeline</h4>
+          <p>Running Trend &rarr; Idea &rarr; Script &rarr; SEO as a single pipeline saves time and ensures each stage builds on the previous one.</p>
+        </div>
+        <div class="card">
+          <h4>4. Check Insights Weekly</h4>
+          <p>The Performance Analyst gets smarter with more data. Review its insights weekly to understand what's working and why.</p>
+        </div>
+        <div class="card">
+          <h4>5. Use All Variants</h4>
+          <p>Don't just use the YouTube script. Post the blog version, share the Twitter thread, publish the newsletter. Multiply your content's reach.</p>
+        </div>
+        <div class="card">
+          <h4>6. Refresh DNA After Pivots</h4>
+          <p>If you change your content style or niche, manually trigger a DNA rebuild from the Profile page to update the AI's understanding.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section>
+      <h2>Frequently Asked Questions</h2>
+
+      <div class="journey-step" style="border-left-color: var(--muted);">
+        <h4>Can Creator OS upload videos to YouTube?</h4>
+        <p style="margin-bottom:0;">No. In Phase 1, Creator OS is read-only for YouTube. It fetches your analytics and channel data but never uploads, modifies, or deletes anything on your channel. You copy the script, title, description, and tags manually to YouTube Studio.</p>
+      </div>
+
+      <div class="journey-step" style="border-left-color: var(--muted);">
+        <h4>Is my YouTube data safe?</h4>
+        <p style="margin-bottom:0;">Yes. Your YouTube API tokens are encrypted at rest using Fernet symmetric encryption. Creator OS only requests read-only scopes. Your data never leaves your self-hosted instance.</p>
+      </div>
+
+      <div class="journey-step" style="border-left-color: var(--muted);">
+        <h4>How much does the AI usage cost?</h4>
+        <p style="margin-bottom:0;">Creator OS uses the Anthropic (Claude) and OpenAI APIs, which are billed by token usage. A typical full pipeline run (trend + idea + script + SEO) costs approximately $0.10&ndash;$0.30 in API credits depending on script length.</p>
+      </div>
+
+      <div class="journey-step" style="border-left-color: var(--muted);">
+        <h4>How many videos does it need for good DNA?</h4>
+        <p style="margin-bottom:0;">The DNA system produces useful results from as few as 5 videos (55% confidence). At 20 videos it reaches 90% confidence. For best results, have at least 10 published videos.</p>
+      </div>
+
+      <div class="journey-step" style="border-left-color: var(--muted);">
+        <h4>Can I use it for non-YouTube platforms?</h4>
+        <p style="margin-bottom:0;">The script variants (blog, Twitter, LinkedIn, newsletter) can be used for any platform. However, the analytics and SEO features are YouTube-specific in Phase 1.</p>
+      </div>
+
+      <div class="journey-step" style="border-left-color: var(--muted);">
+        <h4>What happens if I don't like the script?</h4>
+        <p style="margin-bottom:0;">Every human gate lets you approve, reject, or edit. If you reject, you can regenerate with different parameters or provide specific feedback. The AI will try a different approach.</p>
+      </div>
+    </section>
+
+  </div>
+
+  <footer>
+    Creator OS &mdash; Phase 1 Documentation &copy; 2026
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Creator OS &mdash; Project Scope</title>
+  <style>
+    :root {
+      --bg: #0f111a;
+      --surface: #1a1d2e;
+      --border: #2a2d3e;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --accent: #818cf8;
+      --accent2: #34d399;
+      --accent3: #f472b6;
+      --accent4: #fbbf24;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+    .container { max-width: 960px; margin: 0 auto; padding: 3rem 2rem; }
+
+    /* Header */
+    .hero {
+      text-align: center;
+      padding: 4rem 2rem;
+      background: linear-gradient(135deg, #1e1b4b 0%, #0f111a 50%, #064e3b 100%);
+      border-bottom: 1px solid var(--border);
+    }
+    .hero h1 { font-size: 2.8rem; font-weight: 800; margin-bottom: 0.5rem; }
+    .hero h1 span { color: var(--accent); }
+    .hero .subtitle { color: var(--muted); font-size: 1.15rem; max-width: 600px; margin: 0 auto; }
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-radius: 9999px;
+      margin-bottom: 1rem;
+    }
+    .badge--purple { background: rgba(129,140,248,0.15); color: var(--accent); border: 1px solid rgba(129,140,248,0.3); }
+
+    /* Nav */
+    nav {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0.75rem 2rem;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin: 0 1rem;
+      transition: color 0.2s;
+    }
+    nav a:hover { color: var(--accent); }
+
+    /* Sections */
+    section { margin-bottom: 3rem; }
+    h2 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--accent);
+      display: inline-block;
+    }
+    h3 { font-size: 1.15rem; font-weight: 600; margin: 1.5rem 0 0.5rem; color: var(--accent2); }
+    p { margin-bottom: 1rem; color: var(--muted); }
+    ul, ol { margin: 0.5rem 0 1.5rem 1.5rem; color: var(--muted); }
+    li { margin-bottom: 0.4rem; }
+    li strong { color: var(--text); }
+
+    /* Cards */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.25rem;
+      margin: 1.5rem 0;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: border-color 0.2s;
+    }
+    .card:hover { border-color: var(--accent); }
+    .card .icon { font-size: 1.8rem; margin-bottom: 0.75rem; }
+    .card h4 { font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem; }
+    .card p { font-size: 0.9rem; margin-bottom: 0; }
+
+    /* Table */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0 2rem;
+      font-size: 0.9rem;
+    }
+    th, td {
+      text-align: left;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    th { color: var(--accent); font-weight: 600; background: var(--surface); }
+    td { color: var(--muted); }
+
+    /* Tag list */
+    .tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1rem 0; }
+    .tag {
+      display: inline-block;
+      padding: 0.3rem 0.8rem;
+      font-size: 0.8rem;
+      border-radius: 6px;
+      background: rgba(129,140,248,0.1);
+      color: var(--accent);
+      border: 1px solid rgba(129,140,248,0.2);
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 2rem;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Hero -->
+  <header class="hero">
+    <div class="badge badge--purple">Phase 1 Documentation</div>
+    <h1>Creator <span>OS</span></h1>
+    <p class="subtitle">
+      The AI-native operating system for YouTube creators &mdash; manage your entire content lifecycle from trend discovery to performance analysis.
+    </p>
+  </header>
+
+  <!-- Navigation -->
+  <nav>
+    <a href="scope.html">Scope</a>
+    <a href="design.html">Design</a>
+    <a href="quickstart.html">Quick Start</a>
+    <a href="how_to_use.html">How to Use</a>
+    <a href="local.html">Local Setup</a>
+    <a href="deploy.html">Deploy</a>
+  </nav>
+
+  <div class="container">
+
+    <!-- 1. Vision -->
+    <section id="vision">
+      <h2>Vision &amp; Mission</h2>
+      <p>
+        Creator OS is an <strong>AI-native platform</strong> purpose-built for YouTube content creators.
+        It replaces a fragmented toolkit of trend trackers, script editors, SEO plugins, and analytics dashboards
+        with a single, intelligent system powered by <strong>six coordinated AI agents</strong>.
+      </p>
+      <p>
+        The mission is to let creators focus on what they do best &mdash; creating &mdash; while the platform
+        handles research, writing assistance, optimization, and performance intelligence automatically.
+      </p>
+    </section>
+
+    <!-- 2. Problem Statement -->
+    <section id="problem">
+      <h2>Problem Statement</h2>
+      <p>YouTube creators today juggle 8&ndash;12 separate tools across their workflow:</p>
+      <ul>
+        <li>Google Trends, Reddit, Twitter for trend research</li>
+        <li>Notion or Google Docs for brainstorming and script writing</li>
+        <li>TubeBuddy / VidIQ for SEO optimization</li>
+        <li>YouTube Studio for analytics</li>
+        <li>Canva / Figma for thumbnails</li>
+        <li>Spreadsheets for media kit data</li>
+      </ul>
+      <p>
+        None of these tools talk to each other. Insights from analytics don&rsquo;t feed back into content strategy.
+        Trend data doesn&rsquo;t automatically generate ideas. Scripts don&rsquo;t get optimized for the creator&rsquo;s unique voice.
+      </p>
+      <p>
+        <strong>Creator OS solves this</strong> by unifying the entire content lifecycle into a single AI-powered platform
+        where each stage informs the next through a shared knowledge graph.
+      </p>
+    </section>
+
+    <!-- 3. Target Audience -->
+    <section id="audience">
+      <h2>Target Audience</h2>
+      <div class="card-grid">
+        <div class="card">
+          <div class="icon">&#127909;</div>
+          <h4>Mid-Tier YouTube Creators</h4>
+          <p>10K&ndash;500K subscribers who post regularly and want to grow strategically with data-driven decisions.</p>
+        </div>
+        <div class="card">
+          <div class="icon">&#128640;</div>
+          <h4>Emerging Creators</h4>
+          <p>1K&ndash;10K subscribers looking for a competitive edge to break through the algorithm.</p>
+        </div>
+        <div class="card">
+          <div class="icon">&#127775;</div>
+          <h4>Creator Teams</h4>
+          <p>Small teams (1&ndash;3 people) managing content for established channels who need workflow automation.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. The Six AI Agents -->
+    <section id="agents">
+      <h2>The Six AI Agents</h2>
+      <p>Each agent is a specialized LangGraph state machine that handles one phase of the content lifecycle:</p>
+
+      <div class="card-grid">
+        <div class="card">
+          <div class="icon">&#128269;</div>
+          <h4>1. Trend Scout</h4>
+          <p>Monitors Google Trends, Reddit, YouTube Trending, and news feeds. Scores trends for relevance to the creator&rsquo;s niche and clusters them into actionable themes.</p>
+        </div>
+        <div class="card">
+          <div class="icon">&#128161;</div>
+          <h4>2. Idea Generator</h4>
+          <p>Analyzes content gaps via the knowledge graph, brainstorms trend-based and evergreen ideas, cross-pollinates across niches, and scores each idea for viability.</p>
+        </div>
+        <div class="card">
+          <div class="icon">&#9997;&#65039;</div>
+          <h4>3. Script Architect</h4>
+          <p>Researches topics, builds structured outlines, drafts full scripts in the creator&rsquo;s voice (via Creator DNA), injects retention hooks, and generates multi-platform variants.</p>
+        </div>
+        <div class="card">
+          <div class="icon">&#128200;</div>
+          <h4>4. SEO Optimizer</h4>
+          <p>Extracts keywords, researches competitors, generates optimized titles (5 options), descriptions, tags, thumbnail concepts, and blog SEO &mdash; all scored for effectiveness.</p>
+        </div>
+        <div class="card">
+          <div class="icon">&#128202;</div>
+          <h4>5. Performance Analyst</h4>
+          <p>Syncs YouTube analytics, computes derived metrics, detects patterns, benchmarks against the creator&rsquo;s history, and feeds insights back into other agents.</p>
+        </div>
+        <div class="card">
+          <div class="icon">&#128188;</div>
+          <h4>6. Media Kit Generator</h4>
+          <p>Pulls channel and audience data, calculates growth metrics, analyzes brand safety, computes a rate card, and renders a professional media kit (PDF + public page).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. Core Features -->
+    <section id="features">
+      <h2>Core Feature Set</h2>
+
+      <h3>Creator DNA Fingerprint</h3>
+      <p>
+        Analyzes 20&ndash;100 of the creator&rsquo;s videos to build a multi-dimensional voice profile:
+        vocabulary complexity, sentence rhythm, humor style, formality level, hook patterns, pacing preferences,
+        and more. This DNA is injected into every content-generating agent so output always sounds like <em>the creator</em>.
+      </p>
+
+      <h3>Knowledge Graph</h3>
+      <p>
+        A Neo4j-powered graph connecting creators, content, topics, keywords, trends, audience segments, and ideas.
+        Enables content gap analysis, topic authority scoring, compounding opportunity detection, and hybrid semantic search.
+      </p>
+
+      <h3>Content Pipeline</h3>
+      <p>
+        A kanban-style pipeline tracking content through six stages:
+        <strong>Idea &rarr; Draft &rarr; Review &rarr; Optimized &rarr; Published &rarr; Archived</strong>.
+        Each transition can be manual or automated via the orchestrator.
+      </p>
+
+      <h3>Human-in-the-Loop Gates</h3>
+      <p>
+        At critical decision points (idea approval, script review, SEO package review), the system pauses
+        and presents output for creator approval. The creator can approve, reject, or edit before the pipeline continues.
+      </p>
+
+      <h3>Real-Time Agent Monitoring</h3>
+      <p>
+        WebSocket-powered live updates show which agent is running, what node it&rsquo;s on, and streaming output
+        in real time. A workflow visualizer displays the full pipeline progress.
+      </p>
+
+      <h3>Multi-Platform Output</h3>
+      <p>
+        The Script Architect generates content variants for six platforms:
+        YouTube long-form, YouTube Shorts, blog post, Twitter/X thread, LinkedIn article, and newsletter.
+      </p>
+    </section>
+
+    <!-- 6. Scope Boundaries -->
+    <section id="boundaries">
+      <h2>Scope Boundaries</h2>
+
+      <h3>In Scope (Phase 1)</h3>
+      <table>
+        <thead>
+          <tr><th>Area</th><th>Details</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Authentication</td><td>YouTube/Google OAuth via NextAuth.js</td></tr>
+          <tr><td>AI Agents</td><td>All 6 agents + orchestrator, fully implemented as LangGraph StateGraphs</td></tr>
+          <tr><td>Creator DNA</td><td>Transcript analysis, fingerprint building, embedding storage, style transfer</td></tr>
+          <tr><td>Knowledge Graph</td><td>Neo4j with content ingestion, gap analysis, hybrid search</td></tr>
+          <tr><td>Vector Search</td><td>ChromaDB for DNA embeddings, content similarity, semantic search</td></tr>
+          <tr><td>Caching</td><td>Redis with per-prefix TTLs, rate limiting, quota tracking</td></tr>
+          <tr><td>Scheduled Tasks</td><td>Celery Beat: trend polling (2hr), analytics sync (6hr), DNA rebuild (weekly)</td></tr>
+          <tr><td>Frontend</td><td>Full Next.js 14 dashboard with 10 pages, 25+ components</td></tr>
+          <tr><td>Infrastructure</td><td>Docker Compose (7 services), Alembic migrations, seed data</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Out of Scope (Phase 1)</h3>
+      <ul>
+        <li>Multi-user teams / role-based access control</li>
+        <li>Payment / subscription management</li>
+        <li>Mobile app (responsive web only)</li>
+        <li>Direct YouTube publishing (upload API)</li>
+        <li>Thumbnail image generation (concepts only)</li>
+        <li>A/B testing infrastructure</li>
+        <li>Multi-language / i18n support</li>
+        <li>Custom domain for public media kit pages</li>
+      </ul>
+    </section>
+
+    <!-- 7. Technology Stack -->
+    <section id="stack">
+      <h2>Technology Stack</h2>
+      <h3>Backend</h3>
+      <div class="tags">
+        <span class="tag">Python 3.12</span>
+        <span class="tag">FastAPI</span>
+        <span class="tag">SQLAlchemy Async</span>
+        <span class="tag">Alembic</span>
+        <span class="tag">LangGraph</span>
+        <span class="tag">LangChain</span>
+        <span class="tag">Anthropic Claude</span>
+        <span class="tag">OpenAI GPT-4o</span>
+        <span class="tag">Celery</span>
+        <span class="tag">Pydantic</span>
+        <span class="tag">structlog</span>
+      </div>
+
+      <h3>Databases &amp; Storage</h3>
+      <div class="tags">
+        <span class="tag">PostgreSQL 16 + pgvector</span>
+        <span class="tag">Neo4j 5</span>
+        <span class="tag">ChromaDB</span>
+        <span class="tag">Redis 7</span>
+      </div>
+
+      <h3>Frontend</h3>
+      <div class="tags">
+        <span class="tag">Next.js 14</span>
+        <span class="tag">React 18</span>
+        <span class="tag">TypeScript</span>
+        <span class="tag">Tailwind CSS</span>
+        <span class="tag">shadcn/ui</span>
+        <span class="tag">Recharts</span>
+        <span class="tag">NextAuth.js</span>
+      </div>
+
+      <h3>Infrastructure</h3>
+      <div class="tags">
+        <span class="tag">Docker Compose</span>
+        <span class="tag">Celery Beat</span>
+        <span class="tag">WebSockets</span>
+      </div>
+    </section>
+
+    <!-- 8. Sprint Overview -->
+    <section id="sprints">
+      <h2>Sprint Breakdown</h2>
+      <table>
+        <thead>
+          <tr><th>Sprint</th><th>Focus</th><th>Key Deliverables</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>1</strong></td>
+            <td>Foundation</td>
+            <td>Docker Compose, DB models, migrations, API skeleton, OAuth, frontend shell</td>
+          </tr>
+          <tr>
+            <td><strong>2</strong></td>
+            <td>Core Data Layer</td>
+            <td>Neo4j graph, ChromaDB vectors, LLM factory, Creator DNA, external integrations, services</td>
+          </tr>
+          <tr>
+            <td><strong>3</strong></td>
+            <td>Trend Scout + Idea Generator</td>
+            <td>First 2 agents, agent tools, full API endpoints, trend/idea frontend pages</td>
+          </tr>
+          <tr>
+            <td><strong>4</strong></td>
+            <td>Script Architect + SEO Optimizer</td>
+            <td>Next 2 agents, script editor, SEO dashboard, content pipeline kanban</td>
+          </tr>
+          <tr>
+            <td><strong>5</strong></td>
+            <td>Performance Analyst + Media Kit</td>
+            <td>Last 2 agents, analytics dashboard, media kit generator, feedback loops</td>
+          </tr>
+          <tr>
+            <td><strong>6</strong></td>
+            <td>Orchestrator + Polish</td>
+            <td>Supervisor agent, Celery tasks, knowledge graph API, settings page, tests</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 9. Success Metrics -->
+    <section id="metrics">
+      <h2>Success Metrics</h2>
+      <div class="card-grid">
+        <div class="card">
+          <h4>All Services Boot</h4>
+          <p><code>docker compose up</code> &mdash; 7 services healthy, backend + frontend respond.</p>
+        </div>
+        <div class="card">
+          <h4>OAuth Flow</h4>
+          <p>YouTube OAuth connect &rarr; callback &rarr; token storage &rarr; channel data retrieval works end-to-end.</p>
+        </div>
+        <div class="card">
+          <h4>Agent Invocation</h4>
+          <p>Each of the 6 agents can be invoked via API and returns structured, typed output.</p>
+        </div>
+        <div class="card">
+          <h4>Full Pipeline</h4>
+          <p>Trend &rarr; Idea &rarr; Script &rarr; SEO produces complete, DNA-conditioned output.</p>
+        </div>
+        <div class="card">
+          <h4>Real-Time Updates</h4>
+          <p>WebSocket streams agent status to the frontend dashboard in real time.</p>
+        </div>
+        <div class="card">
+          <h4>Knowledge Graph</h4>
+          <p>Content creation populates Neo4j graph; hybrid search returns relevant results.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10. File Stats -->
+    <section id="stats">
+      <h2>Project Statistics</h2>
+      <div class="card-grid">
+        <div class="card" style="text-align:center;">
+          <div style="font-size:2.5rem; font-weight:800; color:var(--accent);">166</div>
+          <p>Total Files</p>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div style="font-size:2.5rem; font-weight:800; color:var(--accent2);">~20K</div>
+          <p>Lines of Code</p>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div style="font-size:2.5rem; font-weight:800; color:var(--accent3);">6</div>
+          <p>AI Agents</p>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div style="font-size:2.5rem; font-weight:800; color:var(--accent4);">7</div>
+          <p>Docker Services</p>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <footer>
+    Creator OS &mdash; Phase 1 Documentation &copy; 2026
+  </footer>
+
+</body>
+</html>

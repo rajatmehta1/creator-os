@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Creator OS &mdash; Architecture &amp; Design</title>
+  <style>
+    :root {
+      --bg: #0f111a;
+      --surface: #1a1d2e;
+      --surface2: #222540;
+      --border: #2a2d3e;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --accent: #818cf8;
+      --accent2: #34d399;
+      --accent3: #f472b6;
+      --accent4: #fbbf24;
+      --accent5: #38bdf8;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+    .container { max-width: 1000px; margin: 0 auto; padding: 3rem 2rem; }
+
+    .hero {
+      text-align: center;
+      padding: 4rem 2rem;
+      background: linear-gradient(135deg, #1e1b4b 0%, #0f111a 50%, #0c4a6e 100%);
+      border-bottom: 1px solid var(--border);
+    }
+    .hero h1 { font-size: 2.8rem; font-weight: 800; margin-bottom: 0.5rem; }
+    .hero h1 span { color: var(--accent); }
+    .hero .subtitle { color: var(--muted); font-size: 1.15rem; }
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-radius: 9999px;
+      margin-bottom: 1rem;
+      background: rgba(129,140,248,0.15);
+      color: var(--accent);
+      border: 1px solid rgba(129,140,248,0.3);
+    }
+    nav {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0.75rem 2rem;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin: 0 1rem;
+      transition: color 0.2s;
+    }
+    nav a:hover, nav a.active { color: var(--accent); }
+
+    section { margin-bottom: 3rem; }
+    h2 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--accent);
+      display: inline-block;
+    }
+    h3 { font-size: 1.15rem; font-weight: 600; margin: 1.5rem 0 0.5rem; color: var(--accent2); }
+    h4 { font-size: 1rem; font-weight: 600; margin: 1rem 0 0.4rem; color: var(--accent5); }
+    p { margin-bottom: 1rem; color: var(--muted); }
+    ul, ol { margin: 0.5rem 0 1.5rem 1.5rem; color: var(--muted); }
+    li { margin-bottom: 0.4rem; }
+    li strong { color: var(--text); }
+    code {
+      background: var(--surface2);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.85em;
+      color: var(--accent);
+      font-family: 'Cascadia Code', 'Fira Code', monospace;
+    }
+    pre {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+      overflow-x: auto;
+      margin: 1rem 0 1.5rem;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      color: var(--muted);
+      font-family: 'Cascadia Code', 'Fira Code', monospace;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.25rem;
+      margin: 1.5rem 0;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: border-color 0.2s;
+    }
+    .card:hover { border-color: var(--accent); }
+    .card .icon { font-size: 1.8rem; margin-bottom: 0.75rem; }
+    .card h4 { color: var(--text); margin-top: 0; }
+    .card p { font-size: 0.9rem; margin-bottom: 0; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0 2rem;
+      font-size: 0.9rem;
+    }
+    th, td {
+      text-align: left;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    th { color: var(--accent); font-weight: 600; background: var(--surface); }
+    td { color: var(--muted); }
+    td code { font-size: 0.8rem; }
+
+    /* Diagram box */
+    .diagram {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      margin: 1.5rem 0;
+      font-family: 'Cascadia Code', 'Fira Code', monospace;
+      font-size: 0.8rem;
+      line-height: 1.6;
+      overflow-x: auto;
+      white-space: pre;
+      color: var(--muted);
+    }
+    .diagram .hl { color: var(--accent); }
+    .diagram .g { color: var(--accent2); }
+    .diagram .p { color: var(--accent3); }
+    .diagram .y { color: var(--accent4); }
+
+    .flow-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin: 1rem 0;
+    }
+    .flow-box {
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      padding: 0.6rem 1rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .flow-box.active { border-color: var(--accent); color: var(--accent); }
+    .flow-box.green { border-color: var(--accent2); color: var(--accent2); }
+    .flow-box.pink { border-color: var(--accent3); color: var(--accent3); }
+    .flow-box.yellow { border-color: var(--accent4); color: var(--accent4); }
+    .flow-arrow { color: var(--muted); font-size: 1.2rem; }
+
+    footer {
+      text-align: center;
+      padding: 2rem;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="hero">
+    <div class="badge">Architecture &amp; Design</div>
+    <h1>Creator <span>OS</span></h1>
+    <p class="subtitle">System architecture, data flows, and design decisions</p>
+  </header>
+
+  <nav>
+    <a href="scope.html">Scope</a>
+    <a href="design.html" class="active">Design</a>
+    <a href="quickstart.html">Quick Start</a>
+    <a href="how_to_use.html">How to Use</a>
+    <a href="local.html">Local Setup</a>
+    <a href="deploy.html">Deploy</a>
+  </nav>
+
+  <div class="container">
+
+    <!-- 1. High-Level Architecture -->
+    <section>
+      <h2>High-Level Architecture</h2>
+      <p>Creator OS follows a layered architecture with clear separation between the API layer, agent orchestration, data services, and storage:</p>
+
+      <div class="diagram">
+┌─────────────────────────────────────────────────────────────────────┐
+│                        <span class="hl">FRONTEND (Next.js 14)</span>                        │
+│   Dashboard │ Trends │ Ideas │ Scripts │ SEO │ Analytics │ Kit     │
+│                    WebSocket + REST API                            │
+└───────────────────────────┬─────────────────────────────────────────┘
+                            │
+┌───────────────────────────▼─────────────────────────────────────────┐
+│                       <span class="hl">API LAYER (FastAPI)</span>                          │
+│   Auth │ Profile │ Trends │ Ideas │ Scripts │ SEO │ Analytics      │
+│   Content │ Media Kit │ Orchestrator │ Graph │ WebSocket           │
+└──────┬────────────────────┬─────────────────────┬───────────────────┘
+       │                    │                     │
+┌──────▼──────┐   ┌────────▼────────┐   ┌────────▼────────┐
+│  <span class="g">Services</span>   │   │  <span class="p">LangGraph</span>       │   │  <span class="y">Background</span>     │
+│  user       │   │  <span class="p">Agents</span>         │   │  <span class="y">Tasks (Celery)</span> │
+│  content    │   │  Trend Scout    │   │  trend_polling  │
+│  trend      │   │  Idea Generator │   │  analytics_sync │
+│  analytics  │   │  Script Arch.   │   │  dna_rebuild    │
+│  media_kit  │   │  SEO Optimizer  │   │                 │
+│             │   │  Perf. Analyst  │   │                 │
+│             │   │  Media Kit Gen. │   │                 │
+│             │   │  Orchestrator   │   │                 │
+└──────┬──────┘   └────────┬────────┘   └────────┬────────┘
+       │                   │                     │
+┌──────▼───────────────────▼─────────────────────▼────────────────────┐
+│                       <span class="hl">DATA LAYER</span>                                   │
+│  ┌──────────────┐ ┌──────────┐ ┌──────────┐ ┌──────────────────┐   │
+│  │ <span class="g">PostgreSQL</span>   │ │ <span class="p">Neo4j</span>    │ │ <span class="y">ChromaDB</span> │ │ <span class="hl">Redis</span>            │   │
+│  │ + pgvector   │ │ Knowledge│ │ Vector   │ │ Cache + Broker   │   │
+│  │ Users,Content│ │ Graph    │ │ Store    │ │ Rate Limit       │   │
+│  │ Trends,Ideas │ │ Topics   │ │ DNA Emb. │ │ Quota Track      │   │
+│  │ Analytics    │ │ Gaps     │ │ Semantic │ │ WebSocket State  │   │
+│  └──────────────┘ └──────────┘ └──────────┘ └──────────────────┘   │
+└─────────────────────────────────────────────────────────────────────┘
+</div>
+    </section>
+
+    <!-- 2. Service Architecture -->
+    <section>
+      <h2>Docker Services (7 Containers)</h2>
+      <table>
+        <thead>
+          <tr><th>Service</th><th>Image</th><th>Port</th><th>Purpose</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>backend</strong></td><td>Custom (Python 3.12)</td><td>8000</td><td>FastAPI REST + WebSocket API server</td></tr>
+          <tr><td><strong>frontend</strong></td><td>Custom (Node 20)</td><td>3000</td><td>Next.js 14 SSR dashboard</td></tr>
+          <tr><td><strong>postgres</strong></td><td><code>pgvector/pgvector:pg16</code></td><td>5432</td><td>Primary relational DB + vector search</td></tr>
+          <tr><td><strong>redis</strong></td><td><code>redis:7-alpine</code></td><td>6379</td><td>Cache, rate limits, Celery broker, pub/sub</td></tr>
+          <tr><td><strong>neo4j</strong></td><td><code>neo4j:5-community</code></td><td>7474 / 7687</td><td>Knowledge graph for content relationships</td></tr>
+          <tr><td><strong>chroma</strong></td><td><code>chromadb/chroma</code></td><td>8100</td><td>Vector embeddings for DNA + semantic search</td></tr>
+          <tr><td><strong>celery-worker</strong></td><td>Same as backend</td><td>&mdash;</td><td>Background task execution</td></tr>
+          <tr><td><strong>celery-beat</strong></td><td>Same as backend</td><td>&mdash;</td><td>Periodic task scheduler</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 3. Backend Architecture -->
+    <section>
+      <h2>Backend Architecture</h2>
+
+      <h3>Directory Structure</h3>
+      <pre>
+backend/
+├── app/
+│   ├── main.py              # FastAPI app entry point
+│   ├── config.py            # Pydantic Settings (env vars)
+│   ├── dependencies.py      # Dependency injection (DB, Redis, Auth)
+│   ├── api/
+│   │   ├── v1/              # 11 route modules + router
+│   │   └── websocket.py     # WebSocket connection manager
+│   ├── models/              # SQLAlchemy ORM models (6 models)
+│   ├── schemas/             # Pydantic request/response DTOs
+│   ├── services/            # Business logic layer
+│   ├── agents/              # LangGraph agents (6 + orchestrator)
+│   │   └── tools/           # LangChain @tool wrappers
+│   ├── core/
+│   │   ├── llm.py           # Centralized LLM factory
+│   │   ├── embeddings.py    # OpenAI embedding generation
+│   │   ├── output_parsers.py
+│   │   └── prompts/         # All prompt templates
+│   ├── creator_dna/         # DNA fingerprint system
+│   ├── knowledge_graph/     # Neo4j client, queries, ingestion
+│   ├── integrations/        # YouTube, Google Trends, Reddit, News
+│   └── utils/               # Cache, rate limiter, quota tracker
+├── tasks/                   # Celery background tasks
+├── alembic/                 # Database migrations
+└── tests/                   # Test suite
+</pre>
+
+      <h3>Dependency Injection Pattern</h3>
+      <p>All dependencies are injected via FastAPI's <code>Depends()</code> system with type aliases:</p>
+      <pre>
+# dependencies.py
+DbSession   = Annotated[AsyncSession, Depends(get_db)]
+RedisClient = Annotated[Redis, Depends(get_redis)]
+CurrentUser = Annotated[User, Depends(get_current_user)]
+
+# Usage in endpoints:
+@router.get("/trends")
+async def get_trends(db: DbSession, user: CurrentUser, redis: RedisClient):
+    ...
+</pre>
+
+      <h3>LLM Factory Pattern</h3>
+      <p>All LLM access goes through a single factory at <code>app/core/llm.py</code>:</p>
+      <pre>
+# Never instantiate LLM clients directly — always use:
+llm = get_llm(model="claude-sonnet-4-20250514", streaming=True, temperature=0.7)
+
+# Automatic fallback: Claude → OpenAI
+# Built-in retry: 3 attempts with exponential backoff (2–30s)
+# Token counting and cost tracking included
+</pre>
+
+      <h3>Caching Strategy</h3>
+      <p>Every external API call is wrapped with the <code>@cached</code> decorator:</p>
+      <pre>
+CACHE_TTLS = {
+    "trends:google":    3600,    # 1 hour
+    "trends:reddit":    1800,    # 30 min
+    "trends:youtube":   3600,    # 1 hour
+    "trends:news":      3600,    # 1 hour
+    "youtube:channel":  86400,   # 24 hours
+    "youtube:videos":   3600,    # 1 hour
+    "youtube:analytics": 21600,  # 6 hours
+    "dna:fingerprint":  604800,  # 7 days
+    "seo:keywords":     86400,   # 24 hours
+}
+</pre>
+    </section>
+
+    <!-- 4. Agent Architecture -->
+    <section>
+      <h2>Agent Architecture (LangGraph)</h2>
+      <p>
+        Each agent is a <strong>LangGraph StateGraph</strong> — a directed graph of processing nodes with typed state.
+        Nodes are async functions that transform state. Edges define execution order, with support for
+        parallel fan-out and conditional routing.
+      </p>
+
+      <h3>Trend Scout Agent</h3>
+      <p>7 nodes with parallel data fetching:</p>
+      <div class="flow-row">
+        <span class="flow-box active">START</span>
+        <span class="flow-arrow">&rarr;</span>
+        <span class="flow-box green">Google Trends</span>
+        <span class="flow-box green">Reddit</span>
+        <span class="flow-box green">YouTube</span>
+        <span class="flow-box green">News</span>
+        <span class="flow-arrow">&rarr;</span>
+        <span class="flow-box yellow">Score</span>
+        <span class="flow-arrow">&rarr;</span>
+        <span class="flow-box yellow">Cluster</span>
+        <span class="flow-arrow">&rarr;</span>
+        <span class="flow-box pink">Recommend</span>
+        <span class="flow-arrow">&rarr;</span>
+        <span class="flow-box active">END</span>
+      </div>
+      <p>Four data sources are fetched in parallel, then scored for niche relevance, clustered by semantic similarity (cosine &gt; 0.7), and converted into actionable recommendations.</p>
+
+      <h3>Idea Generator Agent</h3>
+      <p>7 nodes with parallel brainstorming:</p>
+      <div class="flow-row">
+        <span class="flow-box active">START</span>
+        <span class="flow-arrow">&rarr;</span>
+        <span class="flow-box green">Gap Analysis</span>
+        <span class="flow-box green">Trend Ideas</span>
+        <span class="flow-box green">Evergreen Ideas</span>
+        <span class="flow-arrow">&rarr;</span>
+        <span class="flow-box yellow">Cross-Pollinate</span>
+        <span class="flow-arrow">&rarr;</span>
+        <span class="flow-box yellow">Score</span>
+        <span class="flow-arrow">&rarr;</span>
+        <span class="flow-box yellow">Diversify</span>
+        <span class="flow-arrow">&rarr;</span>
+        <span class="flow-box pink">Human Gate</span>
+        <span class="flow-arrow">&rarr;</span>
+        <span class="flow-box active">END</span>
+      </div>
+
+      <h3>Script Architect Agent</h3>
+      <p>7 nodes, sequential with DNA conditioning:</p>
+      <div class="flow-row">
+        <span class="flow-box active">START</span>
+        <span class="flow-arrow">&rarr;</span>
+        <span class="flow-box green">Research</span>
+        <span class="flow-arrow">&rarr;</span>
+        <span class="flow-box green">Outline</span>
+        <span class="flow-arrow">&rarr;</span>
+        <span class="flow-box yellow">Draft + DNA</span>
+        <span class="flow-arrow">&rarr;</span>
+        <span class="flow-box yellow">Inject Hooks</span>
+        <span class="flow-arrow">&rarr;</span>
+        <span class="flow-box yellow">Tone Check</span>
+        <span class="flow-arrow">&rarr;</span>
+        <span class="flow-box pink">Variants</span>
+        <span class="flow-arrow">&rarr;</span>
+        <span class="flow-box pink">Human Gate</span>
+        <span class="flow-arrow">&rarr;</span>
+        <span class="flow-box active">END</span>
+      </div>
+      <p>The draft is written using the creator's DNA fingerprint. If the tone check scores below 7.0/10, the draft is automatically rewritten. Variants are generated for 6 platforms.</p>
+
+      <h3>SEO Optimizer Agent</h3>
+      <p>9 nodes with two parallel fan-out stages:</p>
+      <div class="flow-row">
+        <span class="flow-box active">START</span>
+        <span class="flow-arrow">&rarr;</span>
+        <span class="flow-box green">Keywords</span>
+        <span class="flow-arrow">&rarr;</span>
+        <span class="flow-box green">Competitors</span>
+        <span class="flow-box green">Search Intent</span>
+        <span class="flow-arrow">&rarr;</span>
+        <span class="flow-box yellow">Titles</span>
+        <span class="flow-box yellow">Desc</span>
+        <span class="flow-box yellow">Tags</span>
+        <span class="flow-box yellow">Thumbs</span>
+        <span class="flow-box yellow">Blog SEO</span>
+        <span class="flow-arrow">&rarr;</span>
+        <span class="flow-box pink">Score</span>
+        <span class="flow-arrow">&rarr;</span>
+        <span class="flow-box active">END</span>
+      </div>
+
+      <h3>Performance Analyst Agent</h3>
+      <div class="flow-row">
+        <span class="flow-box active">START</span>
+        <span class="flow-arrow">&rarr;</span>
+        <span class="flow-box green">Sync Data</span>
+        <span class="flow-arrow">&rarr;</span>
+        <span class="flow-box green">Compute Metrics</span>
+        <span class="flow-arrow">&rarr;</span>
+        <span class="flow-box yellow">Detect Patterns</span>
+        <span class="flow-box yellow">Benchmark</span>
+        <span class="flow-arrow">&rarr;</span>
+        <span class="flow-box pink">Insights</span>
+        <span class="flow-arrow">&rarr;</span>
+        <span class="flow-box pink">Agent Feedback</span>
+        <span class="flow-arrow">&rarr;</span>
+        <span class="flow-box pink">Update Graph</span>
+        <span class="flow-arrow">&rarr;</span>
+        <span class="flow-box active">END</span>
+      </div>
+
+      <h3>Orchestrator (Supervisor Agent)</h3>
+      <p>Routes requests and manages full pipelines with conditional agent chaining:</p>
+      <div class="flow-row">
+        <span class="flow-box active">Route</span>
+        <span class="flow-arrow">&rarr;</span>
+        <span class="flow-box green">Trend Scout</span>
+        <span class="flow-arrow">&rarr;</span>
+        <span class="flow-box yellow">Idea Gen?</span>
+        <span class="flow-arrow">&rarr;</span>
+        <span class="flow-box pink">Script Arch?</span>
+        <span class="flow-arrow">&rarr;</span>
+        <span class="flow-box active">SEO Opt?</span>
+        <span class="flow-arrow">&rarr;</span>
+        <span class="flow-box green">Finalize</span>
+      </div>
+      <p>Supports three modes: <code>full_pipeline</code> (all agents), <code>single_agent</code> (one specific agent), and <code>custom</code> (user-selected subset).</p>
+    </section>
+
+    <!-- 5. Data Architecture -->
+    <section>
+      <h2>Data Architecture</h2>
+
+      <h3>PostgreSQL (Relational)</h3>
+      <p>Six core tables with pgvector extension for embedding storage:</p>
+      <table>
+        <thead><tr><th>Table</th><th>Key Fields</th><th>Relationships</th></tr></thead>
+        <tbody>
+          <tr><td><code>users</code></td><td>id, email, name, youtube_channel_id, youtube_tokens_encrypted</td><td>Has many: content, ideas, analytics, media_kits</td></tr>
+          <tr><td><code>content</code></td><td>id, user_id, title, body, status, content_type, platform</td><td>Belongs to user; has many variants</td></tr>
+          <tr><td><code>trends</code></td><td>id, title, source, category, relevance_score, velocity</td><td>Has many ideas</td></tr>
+          <tr><td><code>ideas</code></td><td>id, user_id, trend_id, title, hook, angle, score, status</td><td>Belongs to user + trend</td></tr>
+          <tr><td><code>video_analytics</code></td><td>id, user_id, video_id, views, watch_time, ctr, retention_curve</td><td>Belongs to user</td></tr>
+          <tr><td><code>media_kits</code></td><td>id, user_id, data_json, pdf_url, public_slug</td><td>Belongs to user</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Neo4j Knowledge Graph</h3>
+      <p>Seven node types with rich relationships:</p>
+      <pre>
+(:Creator)  -[:CREATED]->       (:Content)
+(:Content)  -[:COVERS]->        (:Topic)
+(:Content)  -[:USES_KEYWORD]->  (:Keyword)
+(:Topic)    -[:RELATED_TO]->    (:Topic)
+(:Trend)    -[:RELATES_TO]->    (:Topic)
+(:Creator)  -[:TARGETS]->       (:AudienceSegment)
+(:Idea)     -[:INSPIRED_BY]->   (:Trend)
+(:Idea)     -[:FILLS_GAP]->     (:Topic)
+</pre>
+      <p>
+        Key queries: content gap analysis (topics with few content pieces), topic authority scoring
+        (depth + breadth of coverage), compounding opportunities (related topics already partially covered),
+        and graph proximity search for hybrid retrieval.
+      </p>
+
+      <h3>ChromaDB Vector Store</h3>
+      <p>Two primary collections:</p>
+      <ul>
+        <li><strong>creator_dna</strong> &mdash; 768-dimensional DNA fingerprint embeddings, one per creator</li>
+        <li><strong>content_embeddings</strong> &mdash; Content piece embeddings for semantic similarity search</li>
+      </ul>
+
+      <h3>Hybrid Search Algorithm</h3>
+      <pre>
+final_score = 0.6 * vector_similarity + 0.4 * graph_proximity
+
+# vector_similarity: ChromaDB cosine similarity (0–1)
+# graph_proximity:   Neo4j shortest path distance, normalized (0–1)
+# Both searches run concurrently via asyncio.gather()
+</pre>
+
+      <h3>Redis Usage Map</h3>
+      <table>
+        <thead><tr><th>Use Case</th><th>Key Pattern</th><th>TTL</th></tr></thead>
+        <tbody>
+          <tr><td>API cache</td><td><code>{prefix}:{args_hash}</code></td><td>Varies (30m–7d)</td></tr>
+          <tr><td>Rate limiting</td><td><code>rate:{user_id}:{endpoint}</code></td><td>1–5 min window</td></tr>
+          <tr><td>YouTube quota</td><td><code>yt_quota:{date}</code></td><td>24 hours</td></tr>
+          <tr><td>Celery broker</td><td>Internal</td><td>N/A</td></tr>
+          <tr><td>WebSocket state</td><td><code>ws:{creator_id}</code></td><td>Session</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 6. Creator DNA -->
+    <section>
+      <h2>Creator DNA System</h2>
+      <p>The DNA fingerprint system is the unique differentiator of Creator OS. It ensures all AI-generated content sounds authentically like the creator.</p>
+
+      <h3>Analysis Pipeline</h3>
+      <ol>
+        <li><strong>Transcript Collection</strong> &mdash; Fetch 20&ndash;100 video transcripts via YouTube Captions API</li>
+        <li><strong>LLM Analysis</strong> &mdash; Claude analyzes each transcript for 14 stylistic dimensions</li>
+        <li><strong>Fingerprint Aggregation</strong> &mdash; Compute means, modes, and frequency-ranked attributes across all transcripts</li>
+        <li><strong>Embedding Generation</strong> &mdash; Convert fingerprint to 768-dim vector stored in ChromaDB</li>
+        <li><strong>Style Transfer</strong> &mdash; Build a conditioning prompt block injected into every content-generating agent</li>
+      </ol>
+
+      <h3>DNA Dimensions</h3>
+      <table>
+        <thead><tr><th>Dimension</th><th>Type</th><th>Example Values</th></tr></thead>
+        <tbody>
+          <tr><td>Vocabulary Complexity</td><td>Float 0–1</td><td>0.65 (moderate)</td></tr>
+          <tr><td>Sentence Rhythm</td><td>String</td><td>"varied with short punchy interjections"</td></tr>
+          <tr><td>Humor Style</td><td>List[String]</td><td>["self-deprecating", "observational"]</td></tr>
+          <tr><td>Formality Level</td><td>Float 0–1</td><td>0.3 (casual)</td></tr>
+          <tr><td>Hook Patterns</td><td>List[String]</td><td>["question", "bold-claim", "story"]</td></tr>
+          <tr><td>Pacing</td><td>String</td><td>"fast with deliberate pauses for emphasis"</td></tr>
+          <tr><td>Transition Style</td><td>String</td><td>"conversational segues"</td></tr>
+          <tr><td>CTA Style</td><td>String</td><td>"soft ask woven into content"</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Confidence Scoring</h3>
+      <pre>
+Videos Analyzed → Confidence Score
+  1 video       → 15%
+  5 videos      → 55%
+ 10 videos      → 75%
+ 20 videos      → 90%
+ 50+ videos     → 99%
+
+Formula: confidence = min(0.99, log(n+1) / log(51) * 0.99)
+</pre>
+      <p>Below 50% confidence, the DNA prompt uses a "low confidence" template with more creative latitude. Above 50%, the full conditioning prompt is injected.</p>
+    </section>
+
+    <!-- 7. Frontend Architecture -->
+    <section>
+      <h2>Frontend Architecture</h2>
+
+      <h3>Directory Structure</h3>
+      <pre>
+frontend/src/
+├── app/
+│   ├── layout.tsx           # Root layout (auth + theme providers)
+│   ├── page.tsx             # Landing / login page
+│   ├── api/auth/            # NextAuth route handler
+│   └── dashboard/
+│       ├── layout.tsx       # Sidebar + Header shell
+│       ├── page.tsx         # Overview dashboard
+│       ├── trends/          # Trend Scout view
+│       ├── ideas/           # Idea Generator view
+│       ├── scripts/         # Script Architect view
+│       ├── seo/             # SEO Optimizer view
+│       ├── content/         # Content pipeline (kanban)
+│       ├── analytics/       # Performance Analyst view
+│       ├── media-kit/       # Media Kit view
+│       ├── profile/         # Creator DNA profile
+│       └── settings/        # Settings + agent config
+├── components/
+│   ├── layout/              # Sidebar, Header, AgentStatusBar
+│   ├── trends/              # TrendCard, TrendTimeline, TrendFilters
+│   ├── content/             # IdeaCard, ScriptEditor, ContentPipeline
+│   ├── dna/                 # DNARadar, VoiceProfile
+│   ├── analytics/           # PerformanceChart, MetricCard, InsightFeed
+│   ├── media-kit/           # MediaKitPreview, MediaKitEditor
+│   ├── agents/              # AgentCard, AgentConsole, HumanGateModal, WorkflowVisualizer
+│   └── shared/              # StreamingText, LoadingAgent, EmptyState
+├── hooks/                   # useWebSocket, useAgent, useYouTube, useCreatorDNA
+├── lib/                     # api client, auth config, utils
+└── types/                   # TypeScript interfaces
+</pre>
+
+      <h3>Key Design Decisions</h3>
+      <ul>
+        <li><strong>App Router</strong> &mdash; Next.js 14 App Router with server components where possible</li>
+        <li><strong>shadcn/ui</strong> &mdash; Copy-paste components (not a dependency) for full control</li>
+        <li><strong>Dark/Light Theme</strong> &mdash; CSS variables via Tailwind, system preference detection</li>
+        <li><strong>SSE for Streaming</strong> &mdash; Agent output streamed via Server-Sent Events for real-time typing</li>
+        <li><strong>WebSocket for Status</strong> &mdash; Agent pipeline status updates via persistent WebSocket connection</li>
+        <li><strong>Recharts</strong> &mdash; Analytics charts (line, bar, radar) for performance and DNA visualization</li>
+      </ul>
+    </section>
+
+    <!-- 8. Security -->
+    <section>
+      <h2>Security Design</h2>
+      <ul>
+        <li><strong>OAuth 2.0</strong> &mdash; YouTube/Google OAuth via NextAuth.js; no passwords stored</li>
+        <li><strong>Token Encryption</strong> &mdash; YouTube API tokens encrypted at rest using Fernet symmetric encryption</li>
+        <li><strong>JWT Sessions</strong> &mdash; Short-lived access tokens with refresh rotation</li>
+        <li><strong>Rate Limiting</strong> &mdash; Per-user, per-endpoint limits via Redis sliding window</li>
+        <li><strong>YouTube Quota Tracking</strong> &mdash; Enforces 10,000 unit/day quota with operation cost mapping</li>
+        <li><strong>CORS</strong> &mdash; Restricted to frontend origin only</li>
+        <li><strong>Input Validation</strong> &mdash; All inputs validated via Pydantic models</li>
+      </ul>
+    </section>
+
+    <!-- 9. Scheduled Tasks -->
+    <section>
+      <h2>Background Jobs &amp; Scheduling</h2>
+      <table>
+        <thead><tr><th>Task</th><th>Schedule</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><code>poll_trends</code></td><td>Every 2 hours</td><td>Fetch fresh trends from all sources for all active creators</td></tr>
+          <tr><td><code>sync_all_analytics</code></td><td>Every 6 hours</td><td>Pull latest YouTube analytics for all connected channels</td></tr>
+          <tr><td><code>rebuild_all_dna</code></td><td>Weekly (Sun 3AM UTC)</td><td>Rebuild Creator DNA fingerprints with any new content</td></tr>
+        </tbody>
+      </table>
+      <p>All tasks use Celery with Redis as the message broker. Celery Beat handles the schedule.</p>
+    </section>
+
+    <!-- 10. Key Design Decisions -->
+    <section>
+      <h2>Key Design Decisions</h2>
+      <div class="card-grid">
+        <div class="card">
+          <h4>Why LangGraph over plain LangChain?</h4>
+          <p>LangGraph provides typed state machines with parallel execution, conditional routing, and built-in persistence &mdash; essential for multi-step agent pipelines with human-in-the-loop gates.</p>
+        </div>
+        <div class="card">
+          <h4>Why Neo4j + ChromaDB + PostgreSQL?</h4>
+          <p>Each database excels at its role: PostgreSQL for relational data, Neo4j for relationship traversal (content gaps, topic authority), ChromaDB for fast vector similarity. Hybrid search combines vector + graph signals.</p>
+        </div>
+        <div class="card">
+          <h4>Why Claude primary + OpenAI fallback?</h4>
+          <p>Claude excels at long-form creative writing and instruction following (critical for DNA-conditioned scripts). OpenAI provides a reliable fallback if Claude is unavailable.</p>
+        </div>
+        <div class="card">
+          <h4>Why Celery over async background tasks?</h4>
+          <p>Celery provides reliable scheduled execution, retry logic, result storage, and monitoring. Async tasks in FastAPI lack persistent scheduling and would couple background work to the API process.</p>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <footer>
+    Creator OS &mdash; Phase 1 Documentation &copy; 2026
+  </footer>
+
+</body>
+</html>

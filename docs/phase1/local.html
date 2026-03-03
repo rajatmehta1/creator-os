@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Creator OS &mdash; Local Setup (No Docker)</title>
+  <style>
+    :root {
+      --bg: #0f111a;
+      --surface: #1a1d2e;
+      --surface2: #222540;
+      --border: #2a2d3e;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --accent: #818cf8;
+      --accent2: #34d399;
+      --accent3: #f472b6;
+      --accent4: #fbbf24;
+      --accent5: #38bdf8;
+      --red: #f87171;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+    .container { max-width: 920px; margin: 0 auto; padding: 3rem 2rem; }
+
+    .hero {
+      text-align: center;
+      padding: 4rem 2rem;
+      background: linear-gradient(135deg, #0c4a6e 0%, #0f111a 50%, #4c1d95 100%);
+      border-bottom: 1px solid var(--border);
+    }
+    .hero h1 { font-size: 2.8rem; font-weight: 800; margin-bottom: 0.5rem; }
+    .hero h1 span { color: var(--accent5); }
+    .hero .subtitle { color: var(--muted); font-size: 1.15rem; }
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-radius: 9999px;
+      margin-bottom: 1rem;
+      background: rgba(56,189,248,0.15);
+      color: var(--accent5);
+      border: 1px solid rgba(56,189,248,0.3);
+    }
+    nav {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0.75rem 2rem;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin: 0 0.75rem;
+      transition: color 0.2s;
+    }
+    nav a:hover, nav a.active { color: var(--accent); }
+
+    section { margin-bottom: 3rem; }
+    h2 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--accent5);
+      display: inline-block;
+    }
+    h3 { font-size: 1.15rem; font-weight: 600; margin: 1.5rem 0 0.5rem; color: var(--accent); }
+    h4 { font-size: 1rem; font-weight: 600; margin: 1rem 0 0.4rem; color: var(--accent5); }
+    p { margin-bottom: 1rem; color: var(--muted); }
+    ul, ol { margin: 0.5rem 0 1.5rem 1.5rem; color: var(--muted); }
+    li { margin-bottom: 0.5rem; }
+    li strong { color: var(--text); }
+    code {
+      background: var(--surface2);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.85em;
+      color: var(--accent5);
+      font-family: 'Cascadia Code', 'Fira Code', monospace;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .terminal {
+      background: #0d1117;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin: 1rem 0 1.5rem;
+      overflow: hidden;
+    }
+    .terminal-header {
+      background: var(--surface);
+      padding: 0.5rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .terminal-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .terminal-dot.r { background: #f87171; }
+    .terminal-dot.y { background: #fbbf24; }
+    .terminal-dot.g { background: #34d399; }
+    .terminal-title { color: var(--muted); font-size: 0.75rem; margin-left: 0.5rem; }
+    .terminal pre {
+      padding: 1.25rem;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      overflow-x: auto;
+      color: var(--muted);
+      font-family: 'Cascadia Code', 'Fira Code', monospace;
+      margin: 0;
+    }
+    .terminal pre .cmd { color: var(--accent2); }
+    .terminal pre .comment { color: #6b7280; }
+    .terminal pre .output { color: #94a3b8; }
+    .terminal pre .success { color: var(--accent2); }
+    .terminal pre .warn { color: var(--accent4); }
+    .terminal pre .err { color: var(--red); }
+    .terminal pre .hl { color: var(--accent); }
+
+    .step {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      margin: 2rem 0;
+    }
+    .step-num {
+      flex-shrink: 0;
+      width: 36px;
+      height: 36px;
+      background: var(--accent5);
+      color: #0f111a;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+    .step-content { flex: 1; }
+    .step-content h3 { margin-top: 0.2rem; }
+
+    .callout {
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      margin: 1rem 0 1.5rem;
+      border-left: 4px solid;
+      font-size: 0.9rem;
+    }
+    .callout.info { background: rgba(129,140,248,0.08); border-color: var(--accent); }
+    .callout.warn { background: rgba(251,191,36,0.08); border-color: var(--accent4); }
+    .callout.success { background: rgba(52,211,153,0.06); border-color: var(--accent2); }
+    .callout.danger { background: rgba(248,113,113,0.08); border-color: var(--red); }
+    .callout strong { color: var(--text); }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0 2rem;
+      font-size: 0.9rem;
+    }
+    th, td {
+      text-align: left;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    th { color: var(--accent); font-weight: 600; background: var(--surface); }
+    td { color: var(--muted); }
+
+    .os-tabs {
+      display: flex;
+      gap: 0;
+      margin-bottom: -1px;
+    }
+    .os-tab {
+      padding: 0.5rem 1.25rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border: 1px solid var(--border);
+      border-bottom: none;
+      border-radius: 8px 8px 0 0;
+      color: var(--muted);
+      background: var(--surface);
+      cursor: default;
+    }
+    .os-tab.active {
+      color: var(--accent5);
+      background: #0d1117;
+      border-color: var(--accent5);
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.25rem;
+      margin: 1.5rem 0;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+    .card h4 { color: var(--text); margin-top: 0; }
+    .card p { font-size: 0.9rem; margin-bottom: 0; }
+
+    footer {
+      text-align: center;
+      padding: 2rem;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="hero">
+    <div class="badge">Local Development</div>
+    <h1>Run Without <span>Docker</span></h1>
+    <p class="subtitle">Install and run every service natively on your machine</p>
+  </header>
+
+  <nav>
+    <a href="scope.html">Scope</a>
+    <a href="design.html">Design</a>
+    <a href="quickstart.html">Quick Start</a>
+    <a href="how_to_use.html">How to Use</a>
+    <a href="local.html" class="active">Local Setup</a>
+    <a href="deploy.html">Deploy</a>
+  </nav>
+
+  <div class="container">
+
+    <!-- Overview -->
+    <section>
+      <h2>Overview</h2>
+      <p>
+        This guide walks you through installing every service directly on your machine &mdash;
+        no Docker required. This gives you maximum control, faster hot-reload, and easier debugging,
+        but requires installing each dependency manually.
+      </p>
+
+      <div class="callout info">
+        <strong>Estimated time:</strong> ~30 minutes for first-time setup. After that, starting the full stack takes under a minute.
+      </div>
+
+      <h3>What You'll Install</h3>
+      <table>
+        <thead><tr><th>Component</th><th>Version</th><th>Role</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Python</strong></td><td>3.12+</td><td>Backend runtime</td></tr>
+          <tr><td><strong>Node.js</strong></td><td>20 LTS</td><td>Frontend runtime</td></tr>
+          <tr><td><strong>PostgreSQL</strong></td><td>16+</td><td>Primary database</td></tr>
+          <tr><td><strong>pgvector</strong></td><td>0.7+</td><td>PostgreSQL vector extension</td></tr>
+          <tr><td><strong>Redis</strong></td><td>7+</td><td>Cache, message broker</td></tr>
+          <tr><td><strong>Neo4j</strong></td><td>5 Community</td><td>Knowledge graph</td></tr>
+          <tr><td><strong>ChromaDB</strong></td><td>0.5+</td><td>Vector store</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Step 1: Python -->
+    <section>
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h3>Install Python 3.12+</h3>
+        </div>
+      </div>
+
+      <div class="os-tabs">
+        <span class="os-tab active">Windows</span>
+        <span class="os-tab">macOS</span>
+        <span class="os-tab">Linux</span>
+      </div>
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot r"></span>
+          <span class="terminal-dot y"></span>
+          <span class="terminal-dot g"></span>
+          <span class="terminal-title">Windows / macOS / Linux</span>
+        </div>
+        <pre><span class="comment"># Windows — download from python.org or use winget:</span>
+<span class="cmd">winget install Python.Python.3.12</span>
+
+<span class="comment"># macOS — use Homebrew:</span>
+<span class="cmd">brew install python@3.12</span>
+
+<span class="comment"># Ubuntu/Debian:</span>
+<span class="cmd">sudo apt update && sudo apt install python3.12 python3.12-venv python3-pip</span>
+
+<span class="comment"># Verify:</span>
+<span class="cmd">python --version</span>
+<span class="success">Python 3.12.x</span></pre>
+      </div>
+    </section>
+
+    <!-- Step 2: Node.js -->
+    <section>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h3>Install Node.js 20 LTS</h3>
+        </div>
+      </div>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot r"></span>
+          <span class="terminal-dot y"></span>
+          <span class="terminal-dot g"></span>
+          <span class="terminal-title">Terminal</span>
+        </div>
+        <pre><span class="comment"># Windows:</span>
+<span class="cmd">winget install OpenJS.NodeJS.LTS</span>
+
+<span class="comment"># macOS:</span>
+<span class="cmd">brew install node@20</span>
+
+<span class="comment"># Linux (via NodeSource):</span>
+<span class="cmd">curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -</span>
+<span class="cmd">sudo apt install -y nodejs</span>
+
+<span class="comment"># Verify:</span>
+<span class="cmd">node --version && npm --version</span>
+<span class="success">v20.x.x
+10.x.x</span></pre>
+      </div>
+    </section>
+
+    <!-- Step 3: PostgreSQL + pgvector -->
+    <section>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h3>Install PostgreSQL 16 + pgvector</h3>
+        </div>
+      </div>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot r"></span>
+          <span class="terminal-dot y"></span>
+          <span class="terminal-dot g"></span>
+          <span class="terminal-title">Windows</span>
+        </div>
+        <pre><span class="comment"># Download PostgreSQL 16 installer from:</span>
+<span class="comment"># https://www.enterprisedb.com/downloads/postgres-postgresql-downloads</span>
+<span class="comment"># Run the installer, set password, keep default port 5432</span>
+
+<span class="comment"># Install pgvector — download the prebuilt Windows package from:</span>
+<span class="comment"># https://github.com/pgvector/pgvector/releases</span>
+<span class="comment"># Or build from source inside a VS Developer Command Prompt:</span>
+<span class="cmd">git clone https://github.com/pgvector/pgvector.git</span>
+<span class="cmd">cd pgvector</span>
+<span class="cmd">nmake /F Makefile.win</span>
+<span class="cmd">nmake /F Makefile.win install</span></pre>
+      </div>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot r"></span>
+          <span class="terminal-dot y"></span>
+          <span class="terminal-dot g"></span>
+          <span class="terminal-title">macOS</span>
+        </div>
+        <pre><span class="cmd">brew install postgresql@16</span>
+<span class="cmd">brew services start postgresql@16</span>
+
+<span class="comment"># pgvector installs via brew:</span>
+<span class="cmd">brew install pgvector</span></pre>
+      </div>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot r"></span>
+          <span class="terminal-dot y"></span>
+          <span class="terminal-dot g"></span>
+          <span class="terminal-title">Ubuntu/Debian</span>
+        </div>
+        <pre><span class="cmd">sudo apt install postgresql-16</span>
+
+<span class="comment"># pgvector:</span>
+<span class="cmd">sudo apt install postgresql-16-pgvector</span>
+
+<span class="comment"># Or build from source:</span>
+<span class="cmd">git clone https://github.com/pgvector/pgvector.git</span>
+<span class="cmd">cd pgvector && make && sudo make install</span></pre>
+      </div>
+
+      <h4>Create the Database &amp; User</h4>
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot r"></span>
+          <span class="terminal-dot y"></span>
+          <span class="terminal-dot g"></span>
+          <span class="terminal-title">Terminal &mdash; psql</span>
+        </div>
+        <pre><span class="comment"># Connect to PostgreSQL as superuser</span>
+<span class="cmd">psql -U postgres</span>
+
+<span class="comment"># Inside psql:</span>
+<span class="hl">CREATE USER creator WITH PASSWORD 'password';</span>
+<span class="hl">CREATE DATABASE creator_os OWNER creator;</span>
+<span class="hl">\c creator_os</span>
+<span class="hl">CREATE EXTENSION IF NOT EXISTS vector;</span>
+<span class="hl">CREATE EXTENSION IF NOT EXISTS "uuid-ossp";</span>
+<span class="hl">GRANT ALL PRIVILEGES ON DATABASE creator_os TO creator;</span>
+<span class="hl">\q</span>
+
+<span class="comment"># Verify connection:</span>
+<span class="cmd">psql -U creator -d creator_os -c "SELECT 1;"</span>
+<span class="success"> ?column?
+----------
+        1</span></pre>
+      </div>
+    </section>
+
+    <!-- Step 4: Redis -->
+    <section>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <h3>Install Redis 7</h3>
+        </div>
+      </div>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot r"></span>
+          <span class="terminal-dot y"></span>
+          <span class="terminal-dot g"></span>
+          <span class="terminal-title">Terminal</span>
+        </div>
+        <pre><span class="comment"># ---- Windows ----</span>
+<span class="comment"># Option A: Install via WSL2 (recommended)</span>
+<span class="cmd">wsl --install</span>
+<span class="comment"># Inside WSL:</span>
+<span class="cmd">sudo apt install redis-server</span>
+<span class="cmd">sudo service redis-server start</span>
+
+<span class="comment"># Option B: Use Memurai (Redis-compatible for Windows)</span>
+<span class="comment"># Download from https://www.memurai.com/</span>
+
+<span class="comment"># Option C: Use the official Redis Windows port</span>
+<span class="cmd">winget install Redis.Redis</span>
+
+<span class="comment"># ---- macOS ----</span>
+<span class="cmd">brew install redis</span>
+<span class="cmd">brew services start redis</span>
+
+<span class="comment"># ---- Ubuntu/Debian ----</span>
+<span class="cmd">sudo apt install redis-server</span>
+<span class="cmd">sudo systemctl enable redis-server</span>
+<span class="cmd">sudo systemctl start redis-server</span>
+
+<span class="comment"># Verify:</span>
+<span class="cmd">redis-cli ping</span>
+<span class="success">PONG</span></pre>
+      </div>
+
+      <div class="callout warn">
+        <strong>Windows users:</strong> Native Redis on Windows can be tricky. The simplest path is
+        <strong>WSL2</strong> (Windows Subsystem for Linux). Install it once and run Redis inside the
+        Linux environment. It's accessible from Windows at <code>localhost:6379</code> automatically.
+      </div>
+    </section>
+
+    <!-- Step 5: Neo4j -->
+    <section>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-content">
+          <h3>Install Neo4j 5 Community</h3>
+        </div>
+      </div>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot r"></span>
+          <span class="terminal-dot y"></span>
+          <span class="terminal-dot g"></span>
+          <span class="terminal-title">Terminal</span>
+        </div>
+        <pre><span class="comment"># ---- All platforms — download from neo4j.com ----</span>
+<span class="comment"># https://neo4j.com/download-center/#community</span>
+<span class="comment"># Download Neo4j Community 5.x, extract, and run:</span>
+
+<span class="comment"># Windows:</span>
+<span class="cmd">neo4j.bat console</span>
+
+<span class="comment"># macOS/Linux:</span>
+<span class="cmd">./bin/neo4j console</span>
+
+<span class="comment"># ---- macOS (Homebrew) ----</span>
+<span class="cmd">brew install neo4j</span>
+<span class="cmd">neo4j start</span>
+
+<span class="comment"># ---- First-time setup ----</span>
+<span class="comment"># Open http://localhost:7474 in your browser</span>
+<span class="comment"># Default login: neo4j / neo4j</span>
+<span class="comment"># It will prompt you to change the password — set it to: password</span>
+<span class="comment"># (or whatever you put in .env for NEO4J_PASSWORD)</span></pre>
+      </div>
+
+      <h4>Load Initial Schema</h4>
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot r"></span>
+          <span class="terminal-dot y"></span>
+          <span class="terminal-dot g"></span>
+          <span class="terminal-title">Neo4j Browser or cypher-shell</span>
+        </div>
+        <pre><span class="comment"># Paste the contents of infrastructure/docker/neo4j/init.cypher</span>
+<span class="comment"># into the Neo4j Browser query box at http://localhost:7474</span>
+<span class="comment"># Or run via cypher-shell:</span>
+<span class="cmd">cat infrastructure/docker/neo4j/init.cypher | cypher-shell -u neo4j -p password</span></pre>
+      </div>
+    </section>
+
+    <!-- Step 6: ChromaDB -->
+    <section>
+      <div class="step">
+        <div class="step-num">6</div>
+        <div class="step-content">
+          <h3>Install ChromaDB</h3>
+        </div>
+      </div>
+
+      <p>ChromaDB is a Python package that can also run as a standalone server. We'll run it as a server so the backend can connect via HTTP.</p>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot r"></span>
+          <span class="terminal-dot y"></span>
+          <span class="terminal-dot g"></span>
+          <span class="terminal-title">Terminal &mdash; Dedicated ChromaDB terminal</span>
+        </div>
+        <pre><span class="comment"># Install ChromaDB globally (or in its own venv)</span>
+<span class="cmd">pip install chromadb</span>
+
+<span class="comment"># Start the server on port 8100 (matching our .env config)</span>
+<span class="cmd">chroma run --host 0.0.0.0 --port 8100 --path ./chroma_data</span>
+
+<span class="success">
+                (((((((((    (((((####
+             ((((((((((((((((((((#########
+           ((((((((((((((((((((((###########
+         ((((((((((((((((((((((((############
+        (((((((((((((((  ((((((((#############
+        (((((((((((((((  ((((((((#############
+         (((((((((((((((((((((((############
+           (((((((((((((((((((((###########
+             ((((((((((((((((((##########
+                (((((((((    ((((#####
+
+     Running Chroma
+     Saving data to: ./chroma_data
+     Anonymized telemetry: disabled
+     Server running on http://0.0.0.0:8100</span></pre>
+      </div>
+
+      <div class="callout info">
+        <strong>Keep this running</strong> in a separate terminal window. ChromaDB needs to stay alive while the backend is running.
+      </div>
+    </section>
+
+    <!-- Step 7: Backend -->
+    <section>
+      <div class="step">
+        <div class="step-num">7</div>
+        <div class="step-content">
+          <h3>Set Up the Backend</h3>
+        </div>
+      </div>
+
+      <h4>Create Virtual Environment &amp; Install Dependencies</h4>
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot r"></span>
+          <span class="terminal-dot y"></span>
+          <span class="terminal-dot g"></span>
+          <span class="terminal-title">Terminal &mdash; Backend</span>
+        </div>
+        <pre><span class="cmd">cd backend</span>
+
+<span class="comment"># Create virtual environment</span>
+<span class="cmd">python -m venv .venv</span>
+
+<span class="comment"># Activate — Windows:</span>
+<span class="cmd">.venv\Scripts\activate</span>
+
+<span class="comment"># Activate — macOS/Linux:</span>
+<span class="cmd">source .venv/bin/activate</span>
+
+<span class="comment"># Install all dependencies (including dev tools)</span>
+<span class="cmd">pip install -e ".[dev]"</span>
+
+<span class="comment"># This installs: FastAPI, SQLAlchemy, LangGraph, LangChain,</span>
+<span class="comment"># Celery, Anthropic/OpenAI SDKs, and everything else.</span></pre>
+      </div>
+
+      <h4>Configure Environment</h4>
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot r"></span>
+          <span class="terminal-dot y"></span>
+          <span class="terminal-dot g"></span>
+          <span class="terminal-title">Terminal</span>
+        </div>
+        <pre><span class="comment"># Copy the example env file (from project root)</span>
+<span class="cmd">cd ..</span>
+<span class="cmd">cp .env.example .env</span>
+
+<span class="comment"># Edit .env and fill in your API keys:</span>
+<span class="comment"># - ANTHROPIC_API_KEY   (required)</span>
+<span class="comment"># - OPENAI_API_KEY      (required)</span>
+<span class="comment"># - YOUTUBE_CLIENT_ID   (required)</span>
+<span class="comment"># - YOUTUBE_CLIENT_SECRET (required)</span>
+<span class="comment"># - SECRET_KEY          (generate: python -c "import secrets; print(secrets.token_hex(32))")</span>
+<span class="comment"># - NEXTAUTH_SECRET     (generate: python -c "import secrets; print(secrets.token_urlsafe(32))")</span>
+<span class="comment">#</span>
+<span class="comment"># The database URLs already default to localhost, so they should</span>
+<span class="comment"># work without changes if you used the defaults above.</span></pre>
+      </div>
+
+      <h4>Run Database Migrations</h4>
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot r"></span>
+          <span class="terminal-dot y"></span>
+          <span class="terminal-dot g"></span>
+          <span class="terminal-title">Terminal &mdash; Backend</span>
+        </div>
+        <pre><span class="cmd">cd backend</span>
+<span class="cmd">alembic upgrade head</span>
+
+<span class="output">INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 001, Initial schema</span></pre>
+      </div>
+
+      <h4>Start the API Server</h4>
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot r"></span>
+          <span class="terminal-dot y"></span>
+          <span class="terminal-dot g"></span>
+          <span class="terminal-title">Terminal &mdash; Backend (keep running)</span>
+        </div>
+        <pre><span class="cmd">uvicorn app.main:app --reload --host 0.0.0.0 --port 8000</span>
+
+<span class="success">INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process
+INFO:     Started server process
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.</span></pre>
+      </div>
+
+      <div class="callout success">
+        <strong>Verify:</strong> Open <a href="http://localhost:8000/health" style="color:var(--accent2)">http://localhost:8000/health</a> &mdash;
+        you should see <code>{"status": "healthy", "version": "1.0.0"}</code>
+      </div>
+    </section>
+
+    <!-- Step 8: Celery -->
+    <section>
+      <div class="step">
+        <div class="step-num">8</div>
+        <div class="step-content">
+          <h3>Start Celery Workers</h3>
+        </div>
+      </div>
+
+      <p>Open <strong>two more terminal windows</strong> (with the venv activated) for the Celery worker and scheduler:</p>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot r"></span>
+          <span class="terminal-dot y"></span>
+          <span class="terminal-dot g"></span>
+          <span class="terminal-title">Terminal 2 &mdash; Celery Worker</span>
+        </div>
+        <pre><span class="cmd">cd backend</span>
+<span class="comment"># Activate venv first (see step 7)</span>
+
+<span class="comment"># Windows — Celery doesn't fully support Windows, use with eventlet:</span>
+<span class="cmd">pip install eventlet</span>
+<span class="cmd">celery -A tasks.celery_app worker --loglevel=info --pool=eventlet</span>
+
+<span class="comment"># macOS/Linux:</span>
+<span class="cmd">celery -A tasks.celery_app worker --loglevel=info</span>
+
+<span class="success"> -------------- celery@your-machine v5.4.x
+--- ***** -----
+-- ******* ---- [config]
+- *** --- * --- .> app:         creator-os
+- ** ---------- .> transport:   redis://localhost:6379/1
+- ** ---------- .> results:     redis://localhost:6379/2
+- *** --- * --- .> concurrency: 8 (prefork)
+-- ******* ---- [queues]
+--- ***** -----
+ -------------- [tasks]
+  . tasks.analytics_sync.sync_all_analytics
+  . tasks.dna_rebuild.rebuild_all_dna
+  . tasks.dna_rebuild.rebuild_single_dna
+  . tasks.trend_polling.poll_trends
+
+[... ready.]</span></pre>
+      </div>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot r"></span>
+          <span class="terminal-dot y"></span>
+          <span class="terminal-dot g"></span>
+          <span class="terminal-title">Terminal 3 &mdash; Celery Beat</span>
+        </div>
+        <pre><span class="cmd">cd backend</span>
+<span class="comment"># Activate venv first</span>
+<span class="cmd">celery -A tasks.celery_app beat --loglevel=info</span>
+
+<span class="success">celery beat v5.4.x is starting.
+__    -    ... __   -
+LocalTime -> 2026-03-02 10:00:00
+Configuration ->
+    . broker -> redis://localhost:6379/1
+    . loader -> celery.loaders.app.AppLoader
+    . scheduler -> celery.beat.PersistentScheduler
+    . logfile -> [stderr]@%INFO
+    . maxinterval -> 5.00 minutes (300s)</span></pre>
+      </div>
+
+      <div class="callout warn">
+        <strong>Windows note:</strong> Celery has limited Windows support. You <em>must</em> install
+        <code>eventlet</code> and use <code>--pool=eventlet</code> on Windows. Alternatively,
+        run Celery inside WSL2 for full compatibility.
+      </div>
+    </section>
+
+    <!-- Step 9: Frontend -->
+    <section>
+      <div class="step">
+        <div class="step-num">9</div>
+        <div class="step-content">
+          <h3>Set Up &amp; Start the Frontend</h3>
+        </div>
+      </div>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot r"></span>
+          <span class="terminal-dot y"></span>
+          <span class="terminal-dot g"></span>
+          <span class="terminal-title">Terminal 4 &mdash; Frontend</span>
+        </div>
+        <pre><span class="cmd">cd frontend</span>
+
+<span class="comment"># Install dependencies</span>
+<span class="cmd">npm install</span>
+
+<span class="comment"># Start dev server</span>
+<span class="cmd">npm run dev</span>
+
+<span class="success">  ▲ Next.js 14.2.x
+  - Local:        http://localhost:3000
+  - Environments: .env
+
+ ✓ Ready in 2.1s</span></pre>
+      </div>
+
+      <div class="callout success">
+        <strong>You're running!</strong> Open <a href="http://localhost:3000" style="color:var(--accent2)">http://localhost:3000</a> to see the dashboard.
+      </div>
+    </section>
+
+    <!-- Terminal Overview -->
+    <section>
+      <h2>Terminal Window Summary</h2>
+      <p>You'll have <strong>5 terminal windows</strong> running simultaneously:</p>
+
+      <table>
+        <thead><tr><th>#</th><th>Service</th><th>Command</th><th>Port</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>ChromaDB</td><td><code>chroma run --port 8100 --path ./chroma_data</code></td><td>8100</td></tr>
+          <tr><td>2</td><td>FastAPI Backend</td><td><code>uvicorn app.main:app --reload --port 8000</code></td><td>8000</td></tr>
+          <tr><td>3</td><td>Celery Worker</td><td><code>celery -A tasks.celery_app worker -l info</code></td><td>&mdash;</td></tr>
+          <tr><td>4</td><td>Celery Beat</td><td><code>celery -A tasks.celery_app beat -l info</code></td><td>&mdash;</td></tr>
+          <tr><td>5</td><td>Next.js Frontend</td><td><code>npm run dev</code></td><td>3000</td></tr>
+        </tbody>
+      </table>
+
+      <p>Plus three system services running in the background (installed as OS services):</p>
+      <table>
+        <thead><tr><th>Service</th><th>Port</th><th>Started By</th></tr></thead>
+        <tbody>
+          <tr><td>PostgreSQL</td><td>5432</td><td>OS service / <code>brew services</code></td></tr>
+          <tr><td>Redis</td><td>6379</td><td>OS service / <code>brew services</code></td></tr>
+          <tr><td>Neo4j</td><td>7474, 7687</td><td><code>neo4j start</code> or OS service</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Convenience Script -->
+    <section>
+      <h2>One-Script Startup (Optional)</h2>
+      <p>Create a startup script to launch everything at once:</p>
+
+      <h4>macOS / Linux &mdash; <code>start-local.sh</code></h4>
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot r"></span>
+          <span class="terminal-dot y"></span>
+          <span class="terminal-dot g"></span>
+          <span class="terminal-title">start-local.sh</span>
+        </div>
+        <pre><span class="comment">#!/bin/bash</span>
+<span class="comment"># Start all Creator OS services locally</span>
+
+<span class="cmd">echo "Starting ChromaDB..."</span>
+<span class="cmd">chroma run --host 0.0.0.0 --port 8100 --path ./chroma_data &amp;</span>
+
+<span class="cmd">echo "Starting Backend..."</span>
+<span class="cmd">cd backend</span>
+<span class="cmd">source .venv/bin/activate</span>
+<span class="cmd">uvicorn app.main:app --reload --host 0.0.0.0 --port 8000 &amp;</span>
+
+<span class="cmd">echo "Starting Celery Worker..."</span>
+<span class="cmd">celery -A tasks.celery_app worker -l info &amp;</span>
+
+<span class="cmd">echo "Starting Celery Beat..."</span>
+<span class="cmd">celery -A tasks.celery_app beat -l info &amp;</span>
+
+<span class="cmd">echo "Starting Frontend..."</span>
+<span class="cmd">cd ../frontend</span>
+<span class="cmd">npm run dev &amp;</span>
+
+<span class="cmd">echo ""</span>
+<span class="cmd">echo "All services started!"</span>
+<span class="cmd">echo "  Backend:  http://localhost:8000"</span>
+<span class="cmd">echo "  Frontend: http://localhost:3000"</span>
+<span class="cmd">echo "  Neo4j:    http://localhost:7474"</span>
+<span class="cmd">echo ""</span>
+<span class="cmd">echo "Press Ctrl+C to stop all services"</span>
+<span class="cmd">wait</span></pre>
+      </div>
+
+      <h4>Windows &mdash; <code>start-local.bat</code></h4>
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot r"></span>
+          <span class="terminal-dot y"></span>
+          <span class="terminal-dot g"></span>
+          <span class="terminal-title">start-local.bat</span>
+        </div>
+        <pre><span class="comment">@echo off</span>
+<span class="cmd">echo Starting ChromaDB...</span>
+<span class="cmd">start "ChromaDB" cmd /k "chroma run --host 0.0.0.0 --port 8100 --path chroma_data"</span>
+
+<span class="cmd">echo Starting Backend...</span>
+<span class="cmd">start "Backend" cmd /k "cd backend && .venv\Scripts\activate && uvicorn app.main:app --reload --host 0.0.0.0 --port 8000"</span>
+
+<span class="cmd">echo Starting Celery Worker...</span>
+<span class="cmd">start "Celery Worker" cmd /k "cd backend && .venv\Scripts\activate && celery -A tasks.celery_app worker -l info --pool=eventlet"</span>
+
+<span class="cmd">echo Starting Celery Beat...</span>
+<span class="cmd">start "Celery Beat" cmd /k "cd backend && .venv\Scripts\activate && celery -A tasks.celery_app beat -l info"</span>
+
+<span class="cmd">echo Starting Frontend...</span>
+<span class="cmd">start "Frontend" cmd /k "cd frontend && npm run dev"</span>
+
+<span class="cmd">echo.</span>
+<span class="cmd">echo All services started in separate windows!</span></pre>
+      </div>
+    </section>
+
+    <!-- Skip Neo4j/Chroma -->
+    <section>
+      <h2>Minimal Setup (Skip Optional Services)</h2>
+      <p>If you want to get running quickly with just the core features, you can skip Neo4j and ChromaDB initially. The app will start but some features won't work:</p>
+
+      <table>
+        <thead><tr><th>Service Skipped</th><th>What Breaks</th><th>Everything Else Still Works</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>Neo4j</strong></td>
+            <td>Knowledge graph endpoints (/graph/*), content gap analysis, topic authority</td>
+            <td>All agents, trends, ideas, scripts, SEO, analytics, media kit</td>
+          </tr>
+          <tr>
+            <td><strong>ChromaDB</strong></td>
+            <td>Semantic search, Creator DNA embeddings storage, content similarity</td>
+            <td>All agents still run (just without vector search), all UI works</td>
+          </tr>
+          <tr>
+            <td><strong>Celery</strong></td>
+            <td>Scheduled tasks (auto trend polling, analytics sync, DNA rebuild)</td>
+            <td>Everything works on-demand &mdash; you just trigger manually</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="callout info">
+        <strong>Minimum viable stack:</strong> PostgreSQL + Redis + Backend + Frontend. That's 4 services
+        and gives you auth, all 6 agents, content pipeline, and the full dashboard.
+        Add Neo4j, ChromaDB, and Celery later when you need them.
+      </div>
+    </section>
+
+    <!-- Troubleshooting -->
+    <section>
+      <h2>Troubleshooting</h2>
+
+      <div class="card-grid">
+        <div class="card">
+          <h4><code>asyncpg</code> can't connect</h4>
+          <p>Make sure PostgreSQL is running and accepting connections on port 5432. Check <code>pg_hba.conf</code> allows local password auth (md5 or scram-sha-256).</p>
+        </div>
+        <div class="card">
+          <h4>Redis connection refused</h4>
+          <p>Verify Redis is running: <code>redis-cli ping</code>. On Windows, make sure your Redis instance (WSL or Memurai) is started.</p>
+        </div>
+        <div class="card">
+          <h4>Neo4j auth error</h4>
+          <p>On first launch, Neo4j forces a password change. Open <code>http://localhost:7474</code>, log in with neo4j/neo4j, and set your password to match <code>.env</code>.</p>
+        </div>
+        <div class="card">
+          <h4>Celery won't start on Windows</h4>
+          <p>Install eventlet: <code>pip install eventlet</code> and use <code>--pool=eventlet</code>. Or run Celery inside WSL2.</p>
+        </div>
+        <div class="card">
+          <h4>pgvector not found</h4>
+          <p><code>CREATE EXTENSION vector</code> fails if pgvector isn't installed for your PostgreSQL version. Re-check the install step for your OS.</p>
+        </div>
+        <div class="card">
+          <h4>Port already in use</h4>
+          <p>Another process is using the port. Find it with <code>netstat -ano | findstr :PORT</code> (Windows) or <code>lsof -i :PORT</code> (macOS/Linux) and stop it.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- vs Docker comparison -->
+    <section>
+      <h2>Local vs Docker Comparison</h2>
+      <table>
+        <thead><tr><th>Aspect</th><th>Local (This Guide)</th><th>Docker</th></tr></thead>
+        <tbody>
+          <tr><td>Setup time</td><td>~30 min (first time)</td><td>~5 min</td></tr>
+          <tr><td>Hot reload speed</td><td>Instant (no container layer)</td><td>Slightly slower</td></tr>
+          <tr><td>Debugging</td><td>Direct (attach any debugger)</td><td>Requires remote debug config</td></tr>
+          <tr><td>RAM usage</td><td>Lower (no Docker overhead)</td><td>~2&ndash;4 GB extra for Docker</td></tr>
+          <tr><td>Reproducibility</td><td>Varies by OS/versions</td><td>Identical everywhere</td></tr>
+          <tr><td>Cleanup</td><td>Manual uninstall each tool</td><td><code>docker compose down -v</code></td></tr>
+          <tr><td>Windows compatibility</td><td>Needs WSL2 for Redis/Celery</td><td>Works natively via Docker Desktop</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+  </div>
+
+  <footer>
+    Creator OS &mdash; Phase 1 Documentation &copy; 2026
+  </footer>
+
+</body>
+</html>
